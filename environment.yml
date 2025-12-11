@@ -1,0 +1,16 @@
+name: rna_game
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - python=3.10
+  - viennarna>=2.7.0
+  - flask>=3.0
+  - numpy
+  - pip
+  - jupyterlab
+  - black
+  - pylint
+  - pip:
+    - waitress

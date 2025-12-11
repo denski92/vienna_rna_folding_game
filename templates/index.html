@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RNA Folding Game - LNF 2026</title>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/fornac.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <h1>RNA Engineering Station</h1>
+    
+    <div id="app-container">
+        <p>Backend Status: <span style="color: green;">Online</span></p>
+        
+        <div id="rna_container"></div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/d3.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/fornac.js') }}"></script>
+    
+    <script src="{{ url_for('static', filename='js/game.js') }}"></script>
+</body>
+</html>

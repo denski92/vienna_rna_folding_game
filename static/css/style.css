@@ -1,0 +1,17 @@
+/**
+ * Main stylesheet for the RNA Folding Game.
+ * Sets up the container dimensions for the Forna visualization.
+ */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 20px;
+}
+
+#rna_container {
+    width: 800px;
+    height: 600px;
+    border: 1px solid #ccc;
+    margin-top: 20px;
+    background-color: #f9f9f9;
+}
