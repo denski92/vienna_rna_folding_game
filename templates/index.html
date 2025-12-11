@@ -15,6 +15,16 @@
         <p>Backend Status: <span style="color: green;">Online</span></p>
         
         <div id="rna_container"></div>
+
+        <div id="mutation-menu" class="mutation-menu" style="display: none;">
+            <p style="margin: 0 0 5px 0; font-size: 12px; font-weight: bold;">Mutate to:</p>
+            <button class="base-btn btn-A" onclick="console.log('Selected A')">A</button>
+            <button class="base-btn btn-U" onclick="console.log('Selected U')">U</button>
+            <button class="base-btn btn-G" onclick="console.log('Selected G')">G</button>
+            <button class="base-btn btn-C" onclick="console.log('Selected C')">C</button>
+            <button class="close-btn" onclick="document.getElementById('mutation-menu').style.display='none'">×</button>
+        </div>
+        
     </div>
 
     <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>

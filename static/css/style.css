@@ -15,3 +15,49 @@ body {
     margin-top: 20px;
     background-color: #f9f9f9;
 }
+
+/**
+ * Styles for the interactive Mutation Menu.
+ * Handles the floating positioning and nucleotide-specific colors.
+ */
+
+.mutation-menu {
+    position: absolute;
+    background: white;
+    border: 2px solid #333;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+    z-index: 1000; /* Ensure it floats above the RNA graph */
+}
+
+/* Common button style */
+.base-btn {
+    width: 35px;
+    height: 35px;
+    margin: 2px;
+    cursor: pointer;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+    font-weight: bold;
+    color: white;
+    font-family: monospace;
+    font-size: 16px;
+}
+
+/* Nucleotide Colors */
+.btn-A { background-color: #FFD700; color: black; } /* Adenine - Yellow */
+.btn-U { background-color: #1E90FF; } /* Uracil - Blue */
+.btn-G { background-color: #FF4500; } /* Guanine - Red */
+.btn-C { background-color: #32CD32; } /* Cytosine - Green */
+
+/* Close button */
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #999;
+    margin-left: 5px;
+}
+.close-btn:hover { color: red; }
