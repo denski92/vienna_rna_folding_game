@@ -9,6 +9,8 @@ let container = new FornaContainer("#rna_container", {
     'zoomable': true,
     'applyForce': true
 });
+// big testseq GGGGGGGGAAAAAAAAACCCCCCCCAAAAAAAGGGGGGGGAAAAAAAAACCCCCCCCAAAAAAAGGGGGGGGAAAAAAAAACCCCCCCCAAAAAAAGGGGGGGGAAAAAAAAACCCCCCCC
+// big teststruc "((((((((.........)))))))).......((((((((.........)))))))).......((((((((.........)))))))).......((((((((.........))))))))";
 
 // State variables
 let currentSequence = "GGGGGGGGAAAAAAAAACCCCCCCC"; 
@@ -18,7 +20,7 @@ let selectedNodeIndex = -1;
 function initGame() {
     let options = {
         'sequence': currentSequence,
-        'structure': '((((((((.........))))))))'
+        'structure': targetStructure
     };
     container.addRNA(options.structure, options);
     setTimeout(attachClickListeners, 500);

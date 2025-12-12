@@ -80,41 +80,47 @@ body {
 }
 
 
-/* Optional: Fix the class mismatch so standard nodes look white, not black */
-/* If your nodes are black instead of white/colored, add this: */
-.node {
-    fill: white;
-    stroke: #ccc;
-    stroke-width: 1px;
-}
-
 /**
- * 2. Specific override for LABEL nodes (10, 20...)
+ * Specific LABEL nodes (10, 20...)
  * We want the number to be visible, but the circle to be INVISIBLE.
  */
 circle[node_type="label"] {
-    fill: transparent !important;   /* Override white fill */
-    stroke: none !important;        /* Remove grey border */
-    pointer-events: none !important; /* Make unclickable */
+    fill: transparent;
+    stroke: none;        /* Remove grey border */
+    pointer-events: none; /* Make unclickable */
 }
 
 /* Ensure the text number (e.g. "10") is unclickable */
 g.gnode[node_type="label"] text {
-    pointer-events: none !important;
-    user-select: none !important;
-    fill: #666; 
-    font-weight: bold;
+    pointer-events: none;
+    user-select: none;
 }
 
 /**
- * 4. Label Connection Line
- * Draws a thin black line from the nucleotide to the number (10, 20).
- * We use !important to override any default opacity settings.
+ * Label Connection Line
+ * Draws a thin dotted black line from the nucleotide to the number (10, 20).
  */
 line[link_type="label_link"] {
-    stroke: black !important;
-    stroke-width: 0.5px !important;
-    stroke-dasharray: 2, 2; /* Small dotted line */
-    opacity: 0.95 !important; 
-    display: inline !important;
+    stroke: #ADADAD;
+    stroke-width: 1px;
+    stroke-dasharray: 3.5, 4.9; /* Creates a dashed line: 3.5px dash, 4.9px gap */
+    opacity: 1; 
+    display: inline;
+}
+
+/**
+ * Backbone Styling
+ * "Draws" the main line of the RNA strand.
+ */
+line[link_type="backbone"] {
+    stroke: #ADADAD;
+    stroke-width: 2px; /* Thicker than the default 1px */
+    stroke-opacity: 1;
+    display: inline;
+}
+
+/* Optional: Ensure Base Pairs (Hydrogen bonds) stay distinct */
+line[link_type="basepair"] {
+    stroke: #ff4d4d;   /* Bright Red for interactions */
+    stroke-width: 2px;
 }
