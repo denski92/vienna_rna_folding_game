@@ -11,14 +11,14 @@ let container = new FornaContainer("#rna_container", {
 });
 
 // State variables
-let currentSequence = "GGGGAAAACCCC"; 
-let targetStructure = "((((....))))";
+let currentSequence = "GGGGGGGGAAAAAAAAACCCCCCCC"; 
+let targetStructure = "((((((((.........))))))))";
 let selectedNodeIndex = -1; 
 
 function initGame() {
     let options = {
         'sequence': currentSequence,
-        'structure': '((((....))))'
+        'structure': '((((((((.........))))))))'
     };
     container.addRNA(options.structure, options);
     setTimeout(attachClickListeners, 500);

@@ -78,3 +78,43 @@ body {
 .node {
     cursor: pointer;
 }
+
+
+/* Optional: Fix the class mismatch so standard nodes look white, not black */
+/* If your nodes are black instead of white/colored, add this: */
+.node {
+    fill: white;
+    stroke: #ccc;
+    stroke-width: 1px;
+}
+
+/**
+ * 2. Specific override for LABEL nodes (10, 20...)
+ * We want the number to be visible, but the circle to be INVISIBLE.
+ */
+circle[node_type="label"] {
+    fill: transparent !important;   /* Override white fill */
+    stroke: none !important;        /* Remove grey border */
+    pointer-events: none !important; /* Make unclickable */
+}
+
+/* Ensure the text number (e.g. "10") is unclickable */
+g.gnode[node_type="label"] text {
+    pointer-events: none !important;
+    user-select: none !important;
+    fill: #666; 
+    font-weight: bold;
+}
+
+/**
+ * 4. Label Connection Line
+ * Draws a thin black line from the nucleotide to the number (10, 20).
+ * We use !important to override any default opacity settings.
+ */
+line[link_type="label_link"] {
+    stroke: black !important;
+    stroke-width: 0.5px !important;
+    stroke-dasharray: 2, 2; /* Small dotted line */
+    opacity: 0.95 !important; 
+    display: inline !important;
+}
