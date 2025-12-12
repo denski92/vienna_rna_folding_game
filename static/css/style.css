@@ -61,3 +61,20 @@ body {
     margin-left: 5px;
 }
 .close-btn:hover { color: red; }
+
+/**
+ * Disable mouse interactions for the nucleotide letters.
+ * This prevents the "I-beam" text cursor and allows clicks to 
+ * fall through to the colored node circle underneath.
+ */
+.node-label {
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none; /* Safari/Chrome */
+    -moz-user-select: none;    /* Firefox */
+}
+
+/* Ensure the cursor always looks like a hand when hovering over a node */
+.node {
+    cursor: pointer;
+}
