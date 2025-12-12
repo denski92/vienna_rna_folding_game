@@ -107,25 +107,24 @@
             </section>
         </div>
 
-        <div id="mutation-menu" class="mutation-menu" style="display: none;">
-            <div class="menu-header">
-                <span class="menu-title">SELECT BASE</span>
-                <button class="close-btn" onclick="document.getElementById('mutation-menu').style.display='none'">×</button>
-            </div>
-            <div class="btn-grid">
-                <button class="base-btn btn-A" onclick="mutateNode('A')">A</button>
-                <button class="base-btn btn-U" onclick="mutateNode('U')">U</button>
-                <button class="base-btn btn-G" onclick="mutateNode('G')">G</button>
-                <button class="base-btn btn-C" onclick="mutateNode('C')">C</button>
-            </div>
-        </div>
-
     </main>
 
     <footer class="app-footer">
         A RNA folding game inspired by <a href="https://eternagame.org" target="_blank">Eterna</a>. 
         Powered by <a href="https://www.tbi.univie.ac.at/RNA/" target="_blank">ViennaRNA</a> and <a href="http://www.viennarna.at/forna/" target="_blank">Forna</a>.
     </footer>
+    <div id="mutation-menu" class="mutation-menu" style="display: none;">
+        <div class="menu-header">
+            <span class="menu-title">SELECT BASE</span>
+            <button class="close-btn" onclick="document.getElementById('mutation-menu').style.display='none'">×</button>
+        </div>
+        <div class="btn-grid">
+            <button class="base-btn btn-A" onclick="mutateNode('A')">A</button>
+            <button class="base-btn btn-U" onclick="mutateNode('U')">U</button>
+            <button class="base-btn btn-G" onclick="mutateNode('G')">G</button>
+            <button class="base-btn btn-C" onclick="mutateNode('C')">C</button>
+        </div>
+    </div>
 
     <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
     <script src="{{ url_for('static', filename='js/d3.js') }}"></script>

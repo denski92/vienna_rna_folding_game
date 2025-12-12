@@ -164,8 +164,8 @@ function attachClickListeners() {
             // Show Menu
             let menu = document.getElementById('mutation-menu');
             menu.style.display = 'flex';
-            menu.style.left = (d3.event.pageX + 15) + 'px';
-            menu.style.top = (d3.event.pageY + 15) + 'px';
+            menu.style.left = (d3.event.pageX + 10) + 'px';
+            menu.style.top = (d3.event.pageY + 10) + 'px';
             
             d3.event.stopPropagation();
         });
