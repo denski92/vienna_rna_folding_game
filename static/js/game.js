@@ -186,13 +186,12 @@ function mutateNode(newBase) {
     document.getElementById('mutation-menu').style.display = 'none';
     if (selectedNodeIndex === -1) return;
 
-    let prevTranslate = [0,0], prevScale = 1;
+    // 1. Capture Camera State
+    let prevTranslate = [0, 0], prevScale = 1;
     if (container.zoomer) {
-        prevTranslate = container.zoomer.translate(); 
-        prevScale = container.zoomer.scale();         
+        prevTranslate = container.zoomer.translate();
+        prevScale = container.zoomer.scale();
     }
-
-    let oldCentroid = getMoleculeCentroid();
 
     let seqArray = currentSequence.split('');
     seqArray[selectedNodeIndex] = newBase;
@@ -200,7 +199,7 @@ function mutateNode(newBase) {
 
     fetch('/api/mutate', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             sequence: nextSequence,
             target: targetStructure
@@ -209,28 +208,20 @@ function mutateNode(newBase) {
     .then(response => response.json())
     .then(data => {
         currentSequence = data.sequence;
-        
-        container.clearNodes(); 
-        let options = { 'sequence': data.sequence, 'structure': data.structure };
 
-        let originalCenterView = container.center_view;
-        container.center_view = function() {}; 
+        // 2. Smooth morph to the new structure
+        if (typeof container.transitionRNA === 'function') {
+            container.transitionRNA(data.structure, {
+                sequence: data.sequence,
+                duration: 900 // Duration in ms
+            });
+        } else {
+            // Fallback if something is wrong with fornac.js update
+            container.clearNodes();
+            container.addRNA(data.structure, { sequence: data.sequence });
+        }
 
-        container.addRNA(options.structure, options);
-
-        // Position Fix
-        let newCentroid = getMoleculeCentroid();
-        let deltaX = oldCentroid.x - newCentroid.x;
-        let deltaY = oldCentroid.y - newCentroid.y;
-
-        container.graph.nodes.forEach(node => {
-            node.x += deltaX; node.y += deltaY;
-            node.px += deltaX; node.py += deltaY;
-        });
-        container.update();
-        
-        // Restore Camera
-        container.center_view = originalCenterView;
+        // 3. Restore User Zoom/Pan immediately
         if (container.zoomer) {
             container.zoomer.translate(prevTranslate);
             container.zoomer.scale(prevScale);

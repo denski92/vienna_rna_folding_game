@@ -4,7 +4,75 @@ null),v.selectAll("g.gnode").on("mousedown.drag",null);B&&(y.select(".background
 (d.options[w]=f[w]);d.options.svgW=d.options.initialSize[0];d.options.svgH=d.options.initialSize[1];d3.scale.category20();var m=null,q=null,D=d3.scale.linear().domain([0,d.options.svgW]).range([0,d.options.svgW]),E=d3.scale.linear().domain([0,d.options.svgH]).range([0,d.options.svgH]),F=d.graph={nodes:[],links:[]};d.linkStrengths={pseudoknot:0,protein_chain:0,chain_chain:0,intermolecule:10,other:10};d.displayParameters={displayBackground:"true",displayNumbering:"true",displayNodeOutline:"true",displayNodeLabel:"true",
 displayLinks:"true",displayPseudoknotLinks:"true",displayProteinLinks:"true"};d.colorScheme="structure";d.customColors={};d.animation=d.options.applyForce;d.deaf=!1;d.rnas={};d.extraLinks=[];d.createInitialLayout=function(b,d){var e={sequence:"",name:"empty",positions:[],labelInterval:10,avoidOthers:!0};if(2==arguments.length)for(var g in d)e.hasOwnProperty(g)&&(e[g]=d[g]);rg=new RNAGraph(e.sequence,b,e.name);rnaJson=rg.recalculateElements();0===e.positions.length&&(e.positions=simple_xy_coordinates(rnaJson.pairtable));
 return rnaJson=rnaJson.elementsToJson().addPositions("nucleotide",e.positions).addLabels(1,e.labelInterval).reinforceStems().reinforceLoops().connectFakeNodes()};d.addRNA=function(b,e){var g=d.createInitialLayout(b,e);1===arguments.length&&(e={});"avoidOthers"in e?d.addRNAJSON(g,e.avoidOthers):d.addRNAJSON(g,!0);return g};d.addRNAJSON=function(b,e){var g,f;e&&(g=0<d.graph.nodes.length?d3.max(d.graph.nodes.map(function(b){return b.x})):0,f=d3.min(b.nodes.map(function(b){return b.x})),b.nodes.forEach(function(b){b.x+=
-g-f;b.px+=g-f}));b.nodes.forEach(function(d){d.rna=b});d.rnas[b.uid]=b;d.recalculateGraph();d.update();d.center_view()};d.transitionRNA=function(b,e,g){b=d.createInitialLayout(e,g);console.log("newRNAJson:",b);p.selectAll("g.gnode").each(function(b){console.log("d before",b)});b=p.selectAll("g.gnode").data(b);b.each(function(b){console.log("d after",b)});b.transition().attr("transform",function(b){console.log("d after",b);return"translate("+[b.x,b.y]+")"}).duration(1E3)};d.recalculateGraph=function(b){d.graph.nodes=
+g-f;b.px+=g-f}));b.nodes.forEach(function(d){d.rna=b});d.rnas[b.uid]=b;d.recalculateGraph();d.update();d.center_view()};d.transitionRNA = function(newStructure, opt) {
+        opt = opt || {};
+        var duration = opt.duration || 900;
+        var rnaKeys = Object.keys(d.rnas);
+        if (!rnaKeys.length) return;
+        var rna = d.rnas[rnaKeys[0]];
+
+        // Build target layout
+        var targetLayout = d.createInitialLayout(newStructure, {
+            sequence: opt.sequence || rna.seq,
+            labelInterval: d.options.labelInterval
+        });
+
+        // Current positions
+        var currentNuc = rna.get_positions("nucleotide"),
+            currentLabel = rna.get_positions("label"),
+            currentMiddle = rna.nodes.filter(function(n) { return n.node_type === "middle" });
+
+        // Target positions (canonical)
+        var targetNuc = targetLayout.get_positions("nucleotide"),
+            targetLabel = targetLayout.get_positions("label"),
+            targetMiddle = targetLayout.nodes.filter(function(n) { return n.node_type === "middle" }).map(function(n) { return [n.x, n.y] });
+
+        // Align target to the current orientation to avoid snapping upright
+        var transform = bestFitTransform(currentNuc, targetNuc);
+        targetNuc = targetNuc.map(transform);
+        targetLabel = targetLabel.map(transform);
+        targetMiddle = targetMiddle.map(transform);
+
+        // Update model but keep node identities/positions as the starting point
+        rna.seq = opt.sequence || rna.seq;
+        rna.dotbracket = newStructure;
+        rna.computePairtable();
+        update_rna_graph(rna);
+        d.recalculateGraph();
+        d.update();
+        d.force.stop();
+        p.selectAll("g.gnode").select("text").text(function(n) { return n.name; });
+        var linkSel = z.selectAll("line.link");
+        var labelNodes = rna.nodes.filter(function(n) { return n.node_type === "label" });
+        var middleNodes = rna.nodes.filter(function(n) { return n.node_type === "middle" });
+        var total = 0,
+            done = 0;
+        var gnodes = p.selectAll("g.gnode");
+        gnodes.each(function() { total++; });
+
+        gnodes.transition().duration(duration).tween("morph", function(node) {
+            var target;
+            if (node.node_type === "nucleotide") target = targetNuc[node.num - 1];
+            else if (node.node_type === "label") target = targetLabel[labelNodes.indexOf(node)];
+            else if (node.node_type === "middle") target = targetMiddle[middleNodes.indexOf(node)];
+            if (!target) return function() {};
+            var ix = d3.interpolateNumber(node.x, target[0]);
+            var iy = d3.interpolateNumber(node.y, target[1]);
+            return function(t) {
+                node.x = ix(t);
+                node.y = iy(t);
+                node.px = node.x;
+                node.py = node.y;
+                d3.select(this).attr("transform", "translate(" + node.x + "," + node.y + ")");
+                linkSel.attr("x1", function(l) { return l.source.x; })
+                    .attr("y1", function(l) { return l.source.y; })
+                    .attr("x2", function(l) { return l.target.x; })
+                    .attr("y2", function(l) { return l.target.y; });
+            };
+        }).each("end", function() {
+            if (++done === total && d.animation) { d.force.alpha(0.15).resume(); }
+        });
+    };d.recalculateGraph=function(b){d.graph.nodes=
 [];d.graph.links=[];for(var e in d.rnas)d.graph.nodes=d.graph.nodes.concat(d.rnas[e].nodes),d.graph.links=d.graph.links.concat(d.rnas[e].links);for(var g={},f=0;f<d.graph.nodes.length;f++)g[d.graph.nodes[f].uid]=d.graph.nodes[f];d.graph.links.forEach(function(b){b.source=g[b.source.uid];b.target=g[b.target.uid]});for(f=0;f<d.extraLinks.length;f++){d.extraLinks[f].target.uid in g||console.log("not there:",d.extraLinks[f]);d.extraLinks[f].source=g[d.extraLinks[f].source.uid];d.extraLinks[f].target=
 g[d.extraLinks[f].target.uid];if("intermolecule"==d.extraLinks[f].link_type)for(fake_links=d.graph.links.filter(function(b){return(b.source==d.extraLinks[f].source||b.source==d.extraLinks[f].target||b.target==d.extraLinks[f].source||b.target==d.extraLinks[f].source)&&"fake"==b.link_type}),b=0;b<fake_links.length;b++)e=d.graph.links.indexOf(fake_links[b]),d.graph.links.splice(e,1);F.links.push(d.extraLinks[f])}};d.addNodes=function(b){b.links.forEach(function(d){"number"==typeof d.source&&(d.source=
 b.nodes[d.source]);"number"==typeof d.target&&(d.target=b.nodes[d.target])});0<d.graph.nodes.length?(max_x=d3.max(d.graph.nodes.map(function(b){return b.x})),max_y=d3.max(d.graph.nodes.map(function(b){return b.y}))):max_y=max_x=0;b.nodes.forEach(function(b){b.rna.uid in d.rnas||(d.rnas[b.rna.uid]=b.rna);b.x+=max_x;b.px+=max_x});r=new RNAGraph("","");r.nodes=b.nodes;r.links=b.links;d.recalculateGraph();d.update();d.center_view()};d.addCustomColors=function(b){d.customColors=b};d.clearNodes=function(){d.graph.nodes=
@@ -66,4 +134,39 @@ j,pt[j]=ni;else throw"Unknown symbol in dotbracket string";for(key in stack)if(0
 f[i]&&f[i]in seen)throw"Invalid pairtable contains duplicate entries";seen[f[i]]=!0;res=0===f[i]?res+".":f[i]>i?res+h.bracket_left[h.insert_into_stack(stack,i,f[i])]:res+h.bracket_right[h.delete_from_stack(stack,i)]}return res};h.find_unmatched=function(f,k,b){for(var e=[],g=[],n=b,l=k;l<=b;l++)0!==f[l]&&(f[l]<k||f[l]>b)&&g.push([l,f[l]]);for(l=k;l<=n;l++){for(;0===f[l]&&l<=n;)l++;for(b=f[l];f[l]===b;)l++,b--;e=e.concat(h.find_unmatched(f,l,b))}0<g.length&&e.push(g);return e};h.removePseudoknotsFromPairtable=
 function(f){for(var k=h.maximumMatching(f),k=h.backtrackMaximumMatching(k,f),b=[],e=1;e<f.length;e++)f[e]<e||k[e]==f[e]||(b.push([e,f[e]]),f[f[e]]=0,f[e]=0);return b}}rnaUtilities=new RNAUtilities;simple_xy_coordinates=function(h){var f=[],k=[];console.log("pair_table",h);var b,e;b=h[0];var g=Array.apply(null,Array(b+5)).map(Number.prototype.valueOf,0),n=Array.apply(null,Array(16+Math.floor(b/5))).map(Number.prototype.valueOf,0),l=Array.apply(null,Array(16+Math.floor(b/5))).map(Number.prototype.valueOf,0);lp=stk=0;var d=Math.PI/2;loop=function(b,e,f){var h=2,k=0,F=0,u,t,x,A,y,v,z;console.log("i:",b,"j:",e);var p=Array.apply(null,Array(1+2*Math.floor((e-b)/5))).map(Number.prototype.valueOf,
 0);u=b-1;for(e++;b!=e;)if((t=f[b])&&0!=b){h+=2;x=b;A=t;p[++k]=x;p[++k]=A;b=t+1;y=x;v=A;z=0;do x++,A--,z++;while(f[x]==A);t=z-2;if(2<=z&&(g[y+1+t]+=d,g[v-1-t]+=d,g[y]+=d,g[v]+=d,2<z))for(;1<=t;t--)g[y+t]=Math.PI,g[v-t]=Math.PI;l[++stk]=z;loop(x,A,f)}else b++,h++,F++;b=Math.PI*(h-2)/h;p[++k]=e;e=0>u?0:u;for(u=1;u<=k;u++){f=p[u]-e;for(t=0;t<=f;t++)g[e+t]+=b;if(u>k)break;e=p[++u]}n[++lp]=F};loop(0,b+1,h);n[lp]-=2;e=0;f[0]=100;k[0]=100;poss=[];poss.push([f[0],k[0]]);for(h=1;h<b;h++)f[h]=f[h-1]+15*Math.cos(e),
-k[h]=k[h-1]+15*Math.sin(e),poss.push([f[h],k[h]]),e+=Math.PI-g[h+1];return poss};
+k[h]=k[h-1]+15*Math.sin(e),poss.push([f[h],k[h]]),e+=Math.PI-g[h+1];return poss};// Rigid transform (translation+rotation+scale) that best fits target to current
+function bestFitTransform(current, target) {
+    if (!current.length || !target.length) return function(p) { return p; };
+    var n = Math.min(current.length, target.length);
+    var cMean = [d3.mean(current.slice(0, n), function(p) { return p[0]; }), d3.mean(current.slice(0, n), function(p) { return p[1]; })];
+    var tMean = [d3.mean(target.slice(0, n), function(p) { return p[0]; }), d3.mean(target.slice(0, n), function(p) { return p[1]; })];
+    var num = 0,
+        den = 0,
+        scaleDen = 0;
+    for (var i = 0; i < n; i++) {
+        var cx = current[i][0] - cMean[0],
+            cy = current[i][1] - cMean[1];
+        var tx = target[i][0] - tMean[0],
+            ty = target[i][1] - tMean[1];
+        num += tx * cy - ty * cx;
+        den += tx * cx + ty * cy;
+        scaleDen += tx * tx + ty * ty;
+    }
+    var theta = Math.atan2(num, den);
+    var cos = Math.cos(theta),
+        sin = Math.sin(theta);
+    var scaleNum = 0;
+    for (i = 0; i < n; i++) {
+        var cx = current[i][0] - cMean[0],
+            cy = current[i][1] - cMean[1];
+        var tx = target[i][0] - tMean[0],
+            ty = target[i][1] - tMean[1];
+        scaleNum += cx * (cos * tx - sin * ty) + cy * (sin * tx + cos * ty);
+    }
+    var scale = scaleDen ? scaleNum / scaleDen : 1;
+    return function(p) {
+        var x = p[0] - tMean[0],
+            y = p[1] - tMean[1];
+        return [scale * (cos * x - sin * y) + cMean[0], scale * (sin * x + cos * y) + cMean[1]];
+    };
+}
