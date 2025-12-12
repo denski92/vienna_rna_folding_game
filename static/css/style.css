@@ -119,50 +119,139 @@ body {
     outline: none;
 }
 
-/* --- 4. Popup Mutation Menu (Floating) --- */
-/* Kept mostly your style, but cleaned up positioning */
+
+/* --- 4. Popup Mutation Menu (Redesigned) --- */
+
+/**
+ * Popup Mutation Menu
+ * Updated with transparency and glassmorphism effect.
+ */
 .mutation-menu {
     position: absolute;
-    background: white;
-    border: 2px solid #333;
-    padding: 10px;
-    border-radius: 8px;
-    box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+    
+    /* Transparent version of #1e1e2e (approx 80% opacity) */
+    background: rgba(30, 30, 46, 0.8);
+    
+    /* Frosted glass effect for better readability */
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+
+    border: 1px solid rgba(255, 255, 255, 0.1);      
+    padding: 12px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.5); 
     z-index: 1000;
+    min-width: 140px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    
+    animation: menu-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* Common button style */
-.base-btn {
-    width: 35px;
-    height: 35px;
-    margin: 2px;
-    cursor: pointer;
-    border-radius: 50%;
-    border: 1px solid #ccc;
+@keyframes menu-pop {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #333;
+    padding-bottom: 5px;
+    margin-bottom: 2px;
+}
+
+.menu-title {
+    font-size: 0.7rem;
     font-weight: bold;
-    color: white;
-    font-family: monospace;
-    font-size: 16px;
-    transition: transform 0.1s;
+    color: var(--text-secondary);
+    letter-spacing: 1px;
 }
-
-.base-btn:active { transform: scale(0.95); }
-
-/* Nucleotide Colors */
-.btn-A { background-color: var(--accent-yellow); color: black; } 
-.btn-U { background-color: var(--accent-blue); } 
-.btn-G { background-color: var(--accent-red); } 
-.btn-C { background-color: var(--accent-green); }
 
 .close-btn {
     background: none;
     border: none;
-    font-size: 20px;
+    font-size: 1.2rem;
+    line-height: 0.8;
     cursor: pointer;
-    color: #999;
-    margin-left: 5px;
+    color: var(--text-secondary);
+    transition: color 0.2s;
 }
-.close-btn:hover { color: red; }
+.close-btn:hover { color: #fff; }
+
+/* Grid for the 4 buttons (2x2 layout) */
+.btn-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    justify-items: center;
+}
+
+/* Common button style */
+.base-btn {
+    width: 42px;
+    height: 42px;
+    cursor: pointer;
+    border-radius: 50%;
+    border: 2px solid transparent; /* Prepare for border color */
+    background-color: #2a2a2a;     /* Dark inner circle */
+    
+    font-weight: 800;
+    font-family: 'Segoe UI Mono', monospace;
+    font-size: 1.1rem;
+    color: white;
+    
+    transition: all 0.2s ease;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+}
+
+/* Specific Colors & Glows */
+
+/* Adenine (Yellow) */
+.btn-A { 
+    border-color: var(--accent-yellow); 
+    color: var(--accent-yellow);
+}
+.btn-A:hover {
+    background-color: var(--accent-yellow);
+    color: #000;
+    box-shadow: 0 0 15px var(--accent-yellow);
+}
+
+/* Uracil (Blue) */
+.btn-U { 
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+}
+.btn-U:hover {
+    background-color: var(--accent-blue);
+    color: #fff;
+    box-shadow: 0 0 15px var(--accent-blue);
+}
+
+/* Guanine (Red) */
+.btn-G { 
+    border-color: var(--accent-red);
+    color: var(--accent-red);
+}
+.btn-G:hover {
+    background-color: var(--accent-red);
+    color: #fff;
+    box-shadow: 0 0 15px var(--accent-red);
+}
+
+/* Cytosine (Green) */
+.btn-C { 
+    border-color: var(--accent-green);
+    color: var(--accent-green);
+}
+.btn-C:hover {
+    background-color: var(--accent-green);
+    color: #000;
+    box-shadow: 0 0 15px var(--accent-green);
+}
 
 /* --- 5. Footer --- */
 .app-footer {

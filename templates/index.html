@@ -58,14 +58,17 @@
                 </footer>
 
             <div id="mutation-menu" class="mutation-menu" style="display: none;">
-                <p style="margin: 0 0 5px 0; font-size: 12px; font-weight: bold;">Mutate to:</p>
+                <div class="menu-header">
+                    <span class="menu-title">SELECT BASE</span>
+                    <button class="close-btn" onclick="document.getElementById('mutation-menu').style.display='none'">×</button>
+                </div>
                 
-                <button class="base-btn btn-A" onclick="mutateNode('A')">A</button>
-                <button class="base-btn btn-U" onclick="mutateNode('U')">U</button>
-                <button class="base-btn btn-G" onclick="mutateNode('G')">G</button>
-                <button class="base-btn btn-C" onclick="mutateNode('C')">C</button>
-                
-                <button class="close-btn" onclick="document.getElementById('mutation-menu').style.display='none'">×</button>
+                <div class="btn-grid">
+                    <button class="base-btn btn-A" onclick="mutateNode('A')">A</button>
+                    <button class="base-btn btn-U" onclick="mutateNode('U')">U</button>
+                    <button class="base-btn btn-G" onclick="mutateNode('G')">G</button>
+                    <button class="base-btn btn-C" onclick="mutateNode('C')">C</button>
+                </div>
             </div>
 
     </main>

@@ -39,7 +39,7 @@ function attachClickListeners() {
               .style('filter', null)        // Removes inline glow
               .classed('selected', false);
 
-            // 3. APPLY Styles to THIS node (Force the Glow)
+            // 3. APPLY Styles to THIS node
             d3.select(this)
               .style('stroke', '#ffe343ff')         // Gold color
               .style('stroke-width', '3.8px')       // Thick border
@@ -52,9 +52,12 @@ function attachClickListeners() {
 
             // 4. Show Menu
             let menu = document.getElementById('mutation-menu');
-            menu.style.display = 'block';
-            menu.style.left = d3.event.pageX + 'px';
-            menu.style.top = d3.event.pageY + 'px';
+            menu.style.display = 'flex'; // Changed from 'block' to 'flex' to keep CSS layout
+            
+            // Offset slightly so it doesn't spawn exactly under the cursor
+            // (15px to the right, 15px down)
+            menu.style.left = (d3.event.pageX + 15) + 'px';
+            menu.style.top = (d3.event.pageY + 15) + 'px';
             
             d3.event.stopPropagation();
         });
