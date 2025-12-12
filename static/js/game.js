@@ -13,7 +13,7 @@ let container = new FornaContainer("#rna_container", {
 // big teststruc "((((((((.........)))))))).......((((((((.........)))))))).......((((((((.........)))))))).......((((((((.........))))))))";
 
 // State variables
-let currentSequence = "GGGGGGGGAAAAAAAAACCCCCCCC"; 
+let currentSequence = "GGGGGGGGAAAAAAAAACCCUUCCC"; 
 let targetStructure = "((((((((.........))))))))";
 let selectedNodeIndex = -1; 
 
@@ -180,6 +180,74 @@ function getMoleculeCentroid() {
     if (count === 0) return {x: 0, y: 0};
     return {x: sumX / count, y: sumY / count};
 }
+
+
+/* --- Settings Widget Logic --- */
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    const settingsBtn = document.getElementById('settings-btn');
+    const settingsPanel = document.getElementById('settings-panel');
+    const closeSettingsBtn = document.getElementById('close-settings');
+    const colorRadios = document.querySelectorAll('input[name="color-scheme"]');
+
+    // 1. Monkey Patch Forna to use Custom Colors for "Sequence" Mode
+    // We save the original function so we can still use it for other modes.
+    const originalChangeColorScheme = container.changeColorScheme.bind(container);
+
+    container.changeColorScheme = function(scheme) {
+        // Let the original function run first (handles state updates and other modes)
+        originalChangeColorScheme(scheme);
+
+        // If the user wants "Nucleotide Type", we overwrite the pale colors with yours
+        if (scheme === 'sequence') {
+            const colorMap = {
+                'A': '#FFD700', // Gold
+                'U': '#1E90FF', // DodgerBlue
+                'G': '#FF4500', // OrangeRed
+                'C': '#32CD32', // LimeGreen
+                'T': '#1E90FF'  // Treat T like U just in case
+            };
+
+            // Select all nucleotide nodes and apply the custom fill
+            d3.selectAll('.node[node_type="nucleotide"]')
+              .style('fill', function(d) {
+                  return colorMap[d.name] || 'white';
+              });
+        }
+    };
+
+    // 2. Toggle Panel Visibility
+    function toggleSettings() {
+        settingsPanel.classList.toggle('hidden');
+    }
+
+    settingsBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleSettings();
+    });
+
+    closeSettingsBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        settingsPanel.classList.add('hidden');
+    });
+
+    // 3. Handle Radio Button Changes
+    colorRadios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            const scheme = e.target.value;
+            // Call our patched function
+            container.changeColorScheme(scheme);
+        });
+    });
+
+    // 4. Close panel when clicking outside
+    document.body.addEventListener('click', (e) => {
+        if (!settingsPanel.contains(e.target) && e.target !== settingsBtn) {
+            settingsPanel.classList.add('hidden');
+        }
+    });
+});
 
 // Start
 initGame();

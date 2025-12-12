@@ -52,6 +52,37 @@
 
         <section class="viz-panel">
             <div id="rna_container"></div>
+
+            <div class="settings-widget">
+                <button id="settings-btn" class="settings-btn" title="Settings">
+                    ⚙️
+                </button>
+
+                <div id="settings-panel" class="settings-panel hidden">
+                    <div class="panel-header">
+                        <span>Display Settings</span>
+                        <button id="close-settings" class="close-text-btn">×</button>
+                    </div>
+                    
+                    <div class="setting-group">
+                        <label>Color Scheme</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="color-scheme" value="structure" checked>
+                                <span>Structure (Default)</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="color-scheme" value="sequence">
+                                <span>Nucleotide Type</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="color-scheme" value="positions">
+                                <span>Position (Gradient)</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
 
             </main> <footer class="app-footer">
@@ -75,7 +106,7 @@
 
     <footer class="app-footer">
         A RNA folding game inspired by <a href="https://eternagame.org" target="_blank">Eterna</a>. 
-        Powered by ViennaRNA and Forna.
+        Powered by <a href="https://www.tbi.univie.ac.at/RNA/" target="_blank">ViennaRNA</a> and <a href="http://www.viennarna.at/forna/" target="_blank">Forna</a>.
     </footer>
 
     <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
