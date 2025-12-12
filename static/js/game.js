@@ -29,20 +29,48 @@ function initGame() {
 function attachClickListeners() {
     d3.selectAll('.node')
         .on('click', function(d) {
-            selectedNodeIndex = d.num - 1; // 1-based to 0-based
+            // 1. Ignore helper nodes
+            if (d.node_type !== 'nucleotide') return;
+
+            // 2. CLEAR Styles from ALL nodes (Reset to default CSS)
+            d3.selectAll('.node')
+              .style('stroke', null)        // Removes inline stroke
+              .style('stroke-width', null)  // Removes inline width
+              .style('filter', null)        // Removes inline glow
+              .classed('selected', false);
+
+            // 3. APPLY Styles to THIS node (Force the Glow)
+            d3.select(this)
+              .style('stroke', '#ffe343ff')         // Gold color
+              .style('stroke-width', '3.8px')       // Thick border
+              .style('stroke-opacity', '0.95')
+              .style('filter', 'drop-shadow(0 0 3px #FFD700) drop-shadow(0 0 15px #FFD700)')
+              
+
+            selectedNodeIndex = d.num - 1; 
             console.log("Selected Node:", selectedNodeIndex);
 
+            // 4. Show Menu
             let menu = document.getElementById('mutation-menu');
             menu.style.display = 'block';
-            menu.style.left = (d3.event.pageX + 15) + 'px';
-            menu.style.top = (d3.event.pageY + 15) + 'px';
+            menu.style.left = d3.event.pageX + 'px';
+            menu.style.top = d3.event.pageY + 'px';
             
             d3.event.stopPropagation();
         });
 
+    // Background Click Listener (Reset everything)
     d3.select('body').on('click', function() {
         if (d3.event.target.tagName !== 'circle') {
              document.getElementById('mutation-menu').style.display = 'none';
+             
+             // Clear all manual styles
+             d3.selectAll('.node')
+               .style('stroke', null)
+               .style('stroke-width', null)
+               .style('filter', null);
+               
+             selectedNodeIndex = -1;
         }
     });
 }

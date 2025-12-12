@@ -3,32 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RNA Folding Game - LNF 2026</title>
+    <title>RNA Builders | Lange Nacht der Forschung</title>
     
     <link rel="stylesheet" href="{{ url_for('static', filename='css/fornac.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <h1>RNA Engineering Station</h1>
-    
-    <div id="app-container">
-        <p>Backend Status: <span style="color: green;">Online</span></p>
-        
-        <div id="rna_container"></div>
-        
-        <div id="mutation-menu" class="mutation-menu" style="display: none;">
-            <p style="margin: 0 0 5px 0; font-size: 12px; font-weight: bold;">Mutate to:</p>
-            
-            <button class="base-btn btn-A" onclick="mutateNode('A')">A</button>
-            <button class="base-btn btn-U" onclick="mutateNode('U')">U</button>
-            <button class="base-btn btn-G" onclick="mutateNode('G')">G</button>
-            <button class="base-btn btn-C" onclick="mutateNode('C')">C</button>
-            
-            <button class="close-btn" onclick="document.getElementById('mutation-menu').style.display='none'">×</button>
-        </div>
 
+    <header class="app-header">
+        <div class="app-title">
+            <h1>RNA Builders</h1>
+        </div>
+        <div class="event-branding">
+            Lange Nacht der Forschung 2026<br>
+            ViennaRNA Outreach Station
+        </div>
+    </header>
+
+    <main class="main-stage">
         
-    </div>
+        <section class="control-panel">
+            <div>
+                <h2>Mission Status</h2>
+                <p>System: <span style="color: #32CD32;">Online</span></p>
+            </div>
+
+            <div class="status-group">
+                <h3>Target Distance</h3>
+                <div class="metric-display">
+                    <span id="dist-val">--</span>
+                </div>
+            </div>
+
+            <div class="status-group">
+                <h3>Stability Energy (ΔG)</h3>
+                <div class="metric-display">
+                    <span id="mfe-val">--</span> 
+                    <span class="metric-unit">kcal/mol</span>
+                </div>
+            </div>
+
+            <div class="mutation-controls">
+                <p class="instruction-text">
+                    Select a node on the right, then choose a base from the popup menu to mutate.
+                </p>
+            </div>
+        </section>
+
+        <section class="viz-panel">
+            <div id="rna_container"></div>
+        </section>
+
+            </main> <footer class="app-footer">
+                </footer>
+
+            <div id="mutation-menu" class="mutation-menu" style="display: none;">
+                <p style="margin: 0 0 5px 0; font-size: 12px; font-weight: bold;">Mutate to:</p>
+                
+                <button class="base-btn btn-A" onclick="mutateNode('A')">A</button>
+                <button class="base-btn btn-U" onclick="mutateNode('U')">U</button>
+                <button class="base-btn btn-G" onclick="mutateNode('G')">G</button>
+                <button class="base-btn btn-C" onclick="mutateNode('C')">C</button>
+                
+                <button class="close-btn" onclick="document.getElementById('mutation-menu').style.display='none'">×</button>
+            </div>
+
+    </main>
+
+    <footer class="app-footer">
+        A RNA folding game inspired by <a href="https://eternagame.org" target="_blank">Eterna</a>. 
+        Powered by ViennaRNA and Forna.
+    </footer>
 
     <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
     <script src="{{ url_for('static', filename='js/d3.js') }}"></script>
