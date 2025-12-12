@@ -1,6 +1,6 @@
 /**
  * Frontend logic for the RNA Folding Game.
- * Handles initialization, click interaction, and mutation logic.
+ * Handles initialization, click interaction, mutation logic, and Level Management.
  */
 
 // Initialize the visualization container
@@ -9,70 +9,174 @@ let container = new FornaContainer("#rna_container", {
     'zoomable': true,
     'applyForce': true
 });
-// big testseq GGGGGGGGAAAAAAAAACCCCCCCCAAAAAAAGGGGGGGGAAAAAAAAACCCCCCCCAAAAAAAGGGGGGGGAAAAAAAAACCCCCCCCAAAAAAAGGGGGGGGAAAAAAAAACCCCCCCC
-// big teststruc "((((((((.........)))))))).......((((((((.........)))))))).......((((((((.........)))))))).......((((((((.........))))))))";
 
-// State variables
-let currentSequence = "GGGGGGGGAAAAAAAAACCCUUCCC"; 
-let targetStructure = "((((((((.........))))))))";
+// Level Definitions
+const LEVELS = [
+    { 
+        name: "The Hairpin",
+        target: "((((((((.........))))))))",
+        startSeq: "GGGGGGGGAAAAAAAAACCCCCCCC" // 25 nts
+    },
+    { 
+        name: "Internal Loop",
+        target: "((((((....((....))....))))))",
+        startSeq: "GGGGGGAAAAGGGGAAAACCCCACCCCC" // 28 nts
+    },
+    { 
+        name: "The Bulge",
+        target: "((((((.((....)).))))))",
+        startSeq: "GGGGGGUAAUUUUUAGCCCCCC" // 22 nts
+    },
+    { 
+        name: "Twin Towers",
+        target: "((((....)))).((((....))))",
+        startSeq: "GGGGAAAACCCCGGGGAAAACCCC" // 25 nts
+    },
+    { 
+        name: "The Cross",
+        target: "((((..((...))..((...))..))))",
+        startSeq: "GGGGUUGGGAAACCAAGGAAACCACCCC" // 28 nts
+    },
+    { 
+        name: "Long Distance",
+        target: "((((((((((....))))))))))",
+        startSeq: "GGGGGGGGGGAAAACCCCCCCCCC" // 24 nts
+    }
+];
+
+// Current State
+let currentSequence = ""; 
+let targetStructure = "";
 let selectedNodeIndex = -1; 
 
+/**
+ * Called by HTML buttons: startLevel(0), startLevel(1), etc.
+ */
+function startLevel(lvlIndex) {
+    const lvl = LEVELS[lvlIndex];
+    if (!lvl) return;
+
+    // 1. Set State
+    currentSequence = lvl.startSeq;
+    targetStructure = lvl.target;
+    
+    // 2. Update UI Titles
+    document.getElementById('level-title').innerText = lvl.name;
+
+    // 3. Switch Screens
+    document.getElementById('level-menu').style.display = 'none';
+    const gameView = document.getElementById('game-view');
+    gameView.style.display = 'flex'; 
+    
+    // 4. CRITICAL FIX: Give the browser 50ms to render the div, 
+    //    then trigger a resize so Forna knows how big the window is.
+    setTimeout(() => {
+        // 1. Tell Forna/Browser "The window size changed, check dimensions!"
+        window.dispatchEvent(new Event('resize'));
+
+        // 2. Now that dimensions are correct, draw the RNA
+        initGame();
+    }, 50);
+}
+
+/**
+ * Return to Menu
+ */
+function showMenu() {
+    document.getElementById('game-view').style.display = 'none';
+    document.getElementById('level-menu').style.display = 'flex';
+    
+    // Optional: Clear container to save memory?
+    container.clearNodes();
+}
+
+/**
+ * Initializes the Forna Container with current data
+ */
 function initGame() {
+    container.clearNodes();
     let options = {
         'sequence': currentSequence,
         'structure': targetStructure
     };
+    
+    // Calculate initial metrics immediately so the numbers aren't empty
+    // (We do a dummy fetch or just set 0 if we assume start isn't solved)
+    // For now, let's just render the RNA:
     container.addRNA(options.structure, options);
+    
+    // Reset metrics display
+    document.getElementById('dist-val').innerText = "--";
+    document.getElementById('mfe-val').innerText = "--";
+
+    // Trigger an initial "mutate" call with the starting sequence 
+    // to get the real initial MFE and Distance from the backend.
+    fetch('/api/mutate', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ sequence: currentSequence, target: targetStructure })
+    })
+    .then(r => r.json())
+    .then(data => {
+        updateMetrics(data);
+        // Re-center after initial load
+        setTimeout(() => container.center_view(), 100);
+    });
+
     setTimeout(attachClickListeners, 500);
+}
+
+function updateMetrics(data) {
+    document.getElementById('dist-val').innerText = data.distance;
+    document.getElementById('mfe-val').innerText = data.mfe;
+    
+    // Color coding
+    const distEl = document.getElementById('dist-val');
+    if (data.distance === 0) {
+        distEl.style.color = '#32CD32'; // Green
+        distEl.innerText = "SOLVED!";
+    } else {
+        distEl.style.color = '#FF4500'; // Red
+    }
 }
 
 function attachClickListeners() {
     d3.selectAll('.node')
         .on('click', function(d) {
-            // 1. Ignore helper nodes
             if (d.node_type !== 'nucleotide') return;
 
-            // 2. CLEAR Styles from ALL nodes (Reset to default CSS)
+            // Clear previous styles
             d3.selectAll('.node')
-              .style('stroke', null)        // Removes inline stroke
-              .style('stroke-width', null)  // Removes inline width
-              .style('filter', null)        // Removes inline glow
+              .style('stroke', null)
+              .style('stroke-width', null)
+              .style('filter', null)
               .classed('selected', false);
 
-            // 3. APPLY Styles to THIS node
+            // Highlight current
             d3.select(this)
-              .style('stroke', '#ffe343ff')         // Gold color
-              .style('stroke-width', '3.8px')       // Thick border
+              .style('stroke', '#ffe343ff')
+              .style('stroke-width', '3.8px')
               .style('stroke-opacity', '0.95')
-              .style('filter', 'drop-shadow(0 0 3px #FFD700) drop-shadow(0 0 15px #FFD700)')
-              
+              .style('filter', 'drop-shadow(0 0 3px #FFD700) drop-shadow(0 0 15px #FFD700)');
 
             selectedNodeIndex = d.num - 1; 
-            console.log("Selected Node:", selectedNodeIndex);
 
-            // 4. Show Menu
+            // Show Menu
             let menu = document.getElementById('mutation-menu');
-            menu.style.display = 'flex'; // Changed from 'block' to 'flex' to keep CSS layout
-            
-            // Offset slightly so it doesn't spawn exactly under the cursor
-            // (15px to the right, 15px down)
+            menu.style.display = 'flex';
             menu.style.left = (d3.event.pageX + 15) + 'px';
             menu.style.top = (d3.event.pageY + 15) + 'px';
             
             d3.event.stopPropagation();
         });
 
-    // Background Click Listener (Reset everything)
     d3.select('body').on('click', function() {
         if (d3.event.target.tagName !== 'circle') {
              document.getElementById('mutation-menu').style.display = 'none';
-             
-             // Clear all manual styles
              d3.selectAll('.node')
                .style('stroke', null)
                .style('stroke-width', null)
                .style('filter', null);
-               
              selectedNodeIndex = -1;
         }
     });
@@ -82,18 +186,13 @@ function mutateNode(newBase) {
     document.getElementById('mutation-menu').style.display = 'none';
     if (selectedNodeIndex === -1) return;
 
-    // 1. Capture Camera State (Zoom/Pan)
-    let prevTranslate = [0,0];
-    let prevScale = 1;
+    let prevTranslate = [0,0], prevScale = 1;
     if (container.zoomer) {
         prevTranslate = container.zoomer.translate(); 
         prevScale = container.zoomer.scale();         
     }
 
-    // --- POSITION FIX START: Capture Molecule Position ---
-    // Where is the molecule currently floating?
     let oldCentroid = getMoleculeCentroid();
-    // ----------------------------------------------------
 
     let seqArray = currentSequence.split('');
     seqArray[selectedNodeIndex] = newBase;
@@ -112,142 +211,86 @@ function mutateNode(newBase) {
         currentSequence = data.sequence;
         
         container.clearNodes(); 
-        
-        let options = {
-            'sequence': data.sequence,
-            'structure': data.structure
-        };
+        let options = { 'sequence': data.sequence, 'structure': data.structure };
 
-        // 2. Monkey Patch: Stop the camera from resetting
         let originalCenterView = container.center_view;
         container.center_view = function() {}; 
 
-        // 3. Add the new RNA (It will be created at default coordinates)
         container.addRNA(options.structure, options);
 
-        // --- POSITION FIX START: Shift New Molecule ---
-        // Calculate where the new molecule spawned
+        // Position Fix
         let newCentroid = getMoleculeCentroid();
-
-        // Calculate the difference vector
         let deltaX = oldCentroid.x - newCentroid.x;
         let deltaY = oldCentroid.y - newCentroid.y;
 
-        // Apply this offset to EVERY node in the new graph
         container.graph.nodes.forEach(node => {
-            node.x += deltaX;
-            node.y += deltaY;
-            // D3 Force layout also uses 'px' (previous x) for physics
-            node.px += deltaX;
-            node.py += deltaY;
+            node.x += deltaX; node.y += deltaY;
+            node.px += deltaX; node.py += deltaY;
         });
-
-        // Force Forna to recognize the moved nodes
         container.update();
-        // ----------------------------------------------
-
-        // Restore camera behavior
+        
+        // Restore Camera
         container.center_view = originalCenterView;
-
-        // 4. Sync D3 Camera
         if (container.zoomer) {
             container.zoomer.translate(prevTranslate);
             container.zoomer.scale(prevScale);
         }
 
+        updateMetrics(data);
         setTimeout(attachClickListeners, 500);
     })
     .catch(error => console.error('Error:', error));
 }
 
-/**
- * Calculates the geometric center (centroid) of the RNA molecule.
- * Used to keep the molecule in the same place after a mutation.
- */
 function getMoleculeCentroid() {
     let nodes = container.graph.nodes;
     let sumX = 0, sumY = 0, count = 0;
-
     nodes.forEach(node => {
-        // We only care about the actual nucleotides, not labels or helper nodes
         if (node.node_type === 'nucleotide') {
-            sumX += node.x;
-            sumY += node.y;
-            count++;
+            sumX += node.x; sumY += node.y; count++;
         }
     });
-
     if (count === 0) return {x: 0, y: 0};
     return {x: sumX / count, y: sumY / count};
 }
 
-
 /* --- Settings Widget Logic --- */
-
-
 document.addEventListener("DOMContentLoaded", function() {
     const settingsBtn = document.getElementById('settings-btn');
     const settingsPanel = document.getElementById('settings-panel');
     const closeSettingsBtn = document.getElementById('close-settings');
     const colorRadios = document.querySelectorAll('input[name="color-scheme"]');
 
-    // 1. Monkey Patch Forna to use Custom Colors for "Sequence" Mode
-    // We save the original function so we can still use it for other modes.
+    // Monkey Patch Colors
     const originalChangeColorScheme = container.changeColorScheme.bind(container);
-
     container.changeColorScheme = function(scheme) {
-        // Let the original function run first (handles state updates and other modes)
         originalChangeColorScheme(scheme);
-
-        // If the user wants "Nucleotide Type", we overwrite the pale colors with yours
         if (scheme === 'sequence') {
-            const colorMap = {
-                'A': '#FFD700', // Gold
-                'U': '#1E90FF', // DodgerBlue
-                'G': '#FF4500', // OrangeRed
-                'C': '#32CD32', // LimeGreen
-                'T': '#1E90FF'  // Treat T like U just in case
+             const colorMap = {
+                'A': '#FFD700', 'a': '#FFD700',
+                'U': '#1E90FF', 'u': '#1E90FF',
+                'G': '#FF4500', 'g': '#FF4500',
+                'C': '#32CD32', 'c': '#32CD32',
+                'T': '#1E90FF', 't': '#1E90FF'
             };
-
-            // Select all nucleotide nodes and apply the custom fill
             d3.selectAll('.node[node_type="nucleotide"]')
-              .style('fill', function(d) {
-                  return colorMap[d.name] || 'white';
-              });
+              .style('fill', function(d) { return colorMap[d.name] || 'white'; });
         }
     };
 
-    // 2. Toggle Panel Visibility
-    function toggleSettings() {
-        settingsPanel.classList.toggle('hidden');
-    }
+    function toggleSettings() { settingsPanel.classList.toggle('hidden'); }
 
-    settingsBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        toggleSettings();
-    });
-
-    closeSettingsBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        settingsPanel.classList.add('hidden');
-    });
-
-    // 3. Handle Radio Button Changes
+    settingsBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleSettings(); });
+    closeSettingsBtn.addEventListener('click', (e) => { e.stopPropagation(); settingsPanel.classList.add('hidden'); });
     colorRadios.forEach(radio => {
-        radio.addEventListener('change', (e) => {
-            const scheme = e.target.value;
-            // Call our patched function
-            container.changeColorScheme(scheme);
-        });
+        radio.addEventListener('change', (e) => { container.changeColorScheme(e.target.value); });
     });
-
-    // 4. Close panel when clicking outside
     document.body.addEventListener('click', (e) => {
         if (!settingsPanel.contains(e.target) && e.target !== settingsBtn) {
             settingsPanel.classList.add('hidden');
         }
     });
-});
 
-// Start
-initGame();
+    // NOTE: initGame() is NOT called here anymore. 
+    // The user must click a level button to trigger initGame().
+});
