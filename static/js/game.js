@@ -49,13 +49,18 @@ function mutateNode(newBase) {
     document.getElementById('mutation-menu').style.display = 'none';
     if (selectedNodeIndex === -1) return;
 
-    // --- STEP 1: Capture current Zoom State ---
+    // 1. Capture Camera State (Zoom/Pan)
     let prevTranslate = [0,0];
     let prevScale = 1;
     if (container.zoomer) {
         prevTranslate = container.zoomer.translate(); 
         prevScale = container.zoomer.scale();         
     }
+
+    // --- POSITION FIX START: Capture Molecule Position ---
+    // Where is the molecule currently floating?
+    let oldCentroid = getMoleculeCentroid();
+    // ----------------------------------------------------
 
     let seqArray = currentSequence.split('');
     seqArray[selectedNodeIndex] = newBase;
@@ -80,18 +85,38 @@ function mutateNode(newBase) {
             'structure': data.structure
         };
 
-        // --- STEP 2: The "Monkey Patch" ---
-        // Disable the auto-centering function temporarily
+        // 2. Monkey Patch: Stop the camera from resetting
         let originalCenterView = container.center_view;
         container.center_view = function() {}; 
 
+        // 3. Add the new RNA (It will be created at default coordinates)
         container.addRNA(options.structure, options);
 
-        // Restore the function
+        // --- POSITION FIX START: Shift New Molecule ---
+        // Calculate where the new molecule spawned
+        let newCentroid = getMoleculeCentroid();
+
+        // Calculate the difference vector
+        let deltaX = oldCentroid.x - newCentroid.x;
+        let deltaY = oldCentroid.y - newCentroid.y;
+
+        // Apply this offset to EVERY node in the new graph
+        container.graph.nodes.forEach(node => {
+            node.x += deltaX;
+            node.y += deltaY;
+            // D3 Force layout also uses 'px' (previous x) for physics
+            node.px += deltaX;
+            node.py += deltaY;
+        });
+
+        // Force Forna to recognize the moved nodes
+        container.update();
+        // ----------------------------------------------
+
+        // Restore camera behavior
         container.center_view = originalCenterView;
 
-        // --- STEP 3: Sync D3 ---
-        // Ensure D3 internal state matches the visual state
+        // 4. Sync D3 Camera
         if (container.zoomer) {
             container.zoomer.translate(prevTranslate);
             container.zoomer.scale(prevScale);
@@ -100,6 +125,27 @@ function mutateNode(newBase) {
         setTimeout(attachClickListeners, 500);
     })
     .catch(error => console.error('Error:', error));
+}
+
+/**
+ * Calculates the geometric center (centroid) of the RNA molecule.
+ * Used to keep the molecule in the same place after a mutation.
+ */
+function getMoleculeCentroid() {
+    let nodes = container.graph.nodes;
+    let sumX = 0, sumY = 0, count = 0;
+
+    nodes.forEach(node => {
+        // We only care about the actual nucleotides, not labels or helper nodes
+        if (node.node_type === 'nucleotide') {
+            sumX += node.x;
+            sumY += node.y;
+            count++;
+        }
+    });
+
+    if (count === 0) return {x: 0, y: 0};
+    return {x: sumX / count, y: sumY / count};
 }
 
 // Start
