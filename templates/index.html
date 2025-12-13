@@ -118,11 +118,29 @@
             <span class="menu-title">SELECT BASE</span>
             <button class="close-btn" onclick="document.getElementById('mutation-menu').style.display='none'">×</button>
         </div>
-        <div class="btn-grid">
-            <button class="base-btn btn-A" onclick="mutateNode('A')">A</button>
-            <button class="base-btn btn-U" onclick="mutateNode('U')">U</button>
-            <button class="base-btn btn-G" onclick="mutateNode('G')">G</button>
-            <button class="base-btn btn-C" onclick="mutateNode('C')">C</button>
+        <div class="menu-container">
+            <svg class="connection-lines" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <!-- A-U Link (Top Row) -->
+                <line id="line-AU" x1="25%" y1="25%" x2="75%" y2="25%" />
+                
+                <!-- G-C Link (Bottom Row) -->
+                <line id="line-GC" x1="25%" y1="75%" x2="75%" y2="75%" />
+                
+                <!-- G-U Link (Diagonal: Top-Right to Bottom-Right is not right, U is Top-Right, G is Bottom-Right) -->
+                <!-- Layout:
+                     A (TL)  U (TR)
+                     C (BL)  G (BR)
+                -->
+                <!-- U is 75%, 25% -->
+                <!-- G is 75%, 75% -->
+                <line id="line-GU" x1="75%" y1="25%" x2="75%" y2="75%" />
+            </svg>
+            <div class="btn-grid">
+                <button class="base-btn btn-A" data-base="A" onclick="mutateNode('A')">A</button>
+                <button class="base-btn btn-U" data-base="U" onclick="mutateNode('U')">U</button>
+                <button class="base-btn btn-C" data-base="C" onclick="mutateNode('C')">C</button>
+                <button class="base-btn btn-G" data-base="G" onclick="mutateNode('G')">G</button>
+            </div>
         </div>
     </div>
 

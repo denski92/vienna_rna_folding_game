@@ -11,7 +11,7 @@ A web-based interactive game where players mutate RNA sequences (A, U, C, G) to 
 
 ## Prerequisites
 
-- **Conda** (Anaconda or Miniconda) is required to manage the environment and dependencies, especially `viennarna`.
+- **Conda** is required to manage the environment and dependencies, like `viennarna`.
 
 ## Installation
 

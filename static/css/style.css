@@ -1,16 +1,22 @@
 /* --- 1. Global Themes & Configuration --- */
 
 :root {
-    --bg-app: #121212;          /* Dark Background */
-    --bg-panel: #1e1e2e;        /* Panel Background */
+    --bg-app: #121212;
+    /* Dark Background */
+    --bg-panel: #1e1e2e;
+    /* Panel Background */
     --text-primary: #ffffff;
     --text-secondary: #a0a0b0;
-    
+
     /* Nucleotide Colors */
-    --accent-blue: #1E90FF;   /* U */
-    --accent-yellow: #FFD700; /* A */
-    --accent-red: #FF4500;    /* G */
-    --accent-green: #32CD32;  /* C */
+    --accent-blue: #1E90FF;
+    /* U */
+    --accent-yellow: #FFD700;
+    /* A */
+    --accent-red: #FF4500;
+    /* G */
+    --accent-green: #32CD32;
+    /* C */
 }
 
 * {
@@ -26,7 +32,8 @@ body {
     height: 100vh;
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* Optimized for Kiosk mode */
+    overflow: hidden;
+    /* Optimized for Kiosk mode */
 }
 
 /* --- 2. Header Layout --- */
@@ -37,7 +44,8 @@ body {
     justify-content: space-between;
     align-items: center;
     border-bottom: 2px solid #333;
-    flex: 0 0 auto; /* Don't shrink */
+    flex: 0 0 auto;
+    /* Don't shrink */
 }
 
 .app-title h1 {
@@ -46,6 +54,7 @@ body {
     /* Gradient Text Effect */
     background: linear-gradient(90deg, var(--accent-blue), var(--accent-green));
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -70,11 +79,13 @@ body {
 
 /* New Class: Handles the layout ONLY when the game is active */
 .game-mode-layout {
-    display: flex;       /* This creates the Side-by-Side layout */
+    display: flex;
+    /* This creates the Side-by-Side layout */
     width: 100%;
     height: 100%;
     gap: 1rem;
-    padding: 1rem;       /* Padding goes here now */
+    padding: 1rem;
+    /* Padding goes here now */
 }
 
 /* Left Sidebar: Controls */
@@ -86,8 +97,9 @@ body {
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
+
 .status-group h3 {
     font-size: 0.9rem;
     text-transform: uppercase;
@@ -99,14 +111,20 @@ body {
     font-size: 2rem;
     font-weight: bold;
 }
-.metric-unit { 
-    font-size: 1rem; 
-    color: var(--text-secondary); 
+
+.metric-unit {
+    font-size: 1rem;
+    color: var(--text-secondary);
 }
 
 /* Color coding for metrics */
-#dist-val { color: var(--accent-red); }
-#mfe-val { color: var(--accent-blue); }
+#dist-val {
+    color: var(--accent-red);
+}
+
+#mfe-val {
+    color: var(--accent-blue);
+}
 
 .instruction-text {
     font-style: italic;
@@ -141,30 +159,97 @@ body {
  */
 .mutation-menu {
     position: absolute;
-    
+
     /* Transparent version of #1e1e2e (approx 80% opacity) */
     background: rgba(30, 30, 46, 0.8);
-    
+
     /* Frosted glass effect for better readability */
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
 
-    border: 1px solid rgba(255, 255, 255, 0.1);      
+    border: 1px solid rgba(255, 255, 255, 0.1);
     padding: 12px;
     border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.5); 
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
     z-index: 1000;
     min-width: 140px;
     display: flex;
     flex-direction: column;
     gap: 10px;
-    
+
     animation: menu-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
+.menu-container {
+    position: relative;
+    padding: 10px;
+}
+
+.connection-lines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    /* Behind buttons */
+    pointer-events: none;
+}
+
+.connection-lines line {
+    stroke: rgba(255, 255, 255, 0.1);
+    stroke-width: 2px;
+    transition: all 0.3s ease;
+}
+
+.connection-lines line.glow {
+    stroke-width: 4px;
+    stroke-opacity: 1;
+    filter: drop-shadow(0 0 5px currentColor);
+}
+
+/* Specific Line Colors matching pairs */
+/* A-U: Yellow - Blue Mix? Let's use white/theme or gradient if possible. 
+   Simple approach: Use a neutral or mixed color, or the color of the pair being formed.
+   Actually, request says "corresponding possible basepairs should also glow".
+   Let's create specific classes for the active state colors.
+*/
+
+#line-AU.glow {
+    stroke: #00FF00;
+    filter: drop-shadow(0 0 8px #00FF00);
+}
+
+/* Solved/Strong pair color? Or mix of A/U? Request says "highlighted". Let's stick to a bright "pair" color or just white glow. */
+/* Wait, "circle begins to glow in its color. Now the corresponding possible basepairs should also glow."
+   If I hover A (Yellow), A-U should glow.
+   Let's use a standard bright connection color like white or a "bond" color.
+*/
+#line-AU.glow {
+    stroke: #ffffff;
+    filter: drop-shadow(0 0 5px #ffffff);
+}
+
+#line-GC.glow {
+    stroke: #ffffff;
+    filter: drop-shadow(0 0 5px #ffffff);
+}
+
+#line-GU.glow {
+    stroke: #ffffff;
+    filter: drop-shadow(0 0 5px #ffffff);
+}
+
 @keyframes menu-pop {
-    0% { transform: scale(0.8); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 .menu-header {
@@ -192,13 +277,19 @@ body {
     color: var(--text-secondary);
     transition: color 0.2s;
 }
-.close-btn:hover { color: #fff; }
+
+.close-btn:hover {
+    color: #fff;
+}
 
 /* Grid for the 4 buttons (2x2 layout) */
 .btn-grid {
+    position: relative;
+    z-index: 1;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
+    gap: 30px;
+    /* Increased from 8px */
     justify-items: center;
 }
 
@@ -208,25 +299,28 @@ body {
     height: 42px;
     cursor: pointer;
     border-radius: 50%;
-    border: 2px solid transparent; /* Prepare for border color */
-    background-color: #2a2a2a;     /* Dark inner circle */
-    
+    border: 2px solid transparent;
+    /* Prepare for border color */
+    background-color: #2a2a2a;
+    /* Dark inner circle */
+
     font-weight: 800;
     font-family: 'Segoe UI Mono', monospace;
-    font-size: 1.1rem;
+    font-size: 1.7rem;
     color: white;
-    
+
     transition: all 0.2s ease;
-    box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
 }
 
 /* Specific Colors & Glows */
 
 /* Adenine (Yellow) */
-.btn-A { 
-    border-color: var(--accent-yellow); 
+.btn-A {
+    border-color: var(--accent-yellow);
     color: var(--accent-yellow);
 }
+
 .btn-A:hover {
     background-color: var(--accent-yellow);
     color: #000;
@@ -234,10 +328,11 @@ body {
 }
 
 /* Uracil (Blue) */
-.btn-U { 
+.btn-U {
     border-color: var(--accent-blue);
     color: var(--accent-blue);
 }
+
 .btn-U:hover {
     background-color: var(--accent-blue);
     color: #fff;
@@ -245,10 +340,11 @@ body {
 }
 
 /* Guanine (Red) */
-.btn-G { 
+.btn-G {
     border-color: var(--accent-red);
     color: var(--accent-red);
 }
+
 .btn-G:hover {
     background-color: var(--accent-red);
     color: #fff;
@@ -256,10 +352,11 @@ body {
 }
 
 /* Cytosine (Green) */
-.btn-C { 
+.btn-C {
     border-color: var(--accent-green);
     color: var(--accent-green);
 }
+
 .btn-C:hover {
     background-color: var(--accent-green);
     color: #000;
@@ -275,7 +372,11 @@ body {
     background: var(--bg-panel);
     flex: 0 0 auto;
 }
-.app-footer a { color: var(--accent-blue); text-decoration: none; }
+
+.app-footer a {
+    color: var(--accent-blue);
+    text-decoration: none;
+}
 
 
 /* --- 6. FORNA VISUALIZATION OVERRIDES (Your Tweaks) --- */
@@ -292,15 +393,15 @@ body {
 .node-label {
     pointer-events: none;
     user-select: none;
-    -webkit-user-select: none; 
-    -moz-user-select: none;    
+    -webkit-user-select: none;
+    -moz-user-select: none;
 }
 
 /* Override for LABEL nodes (10, 20...): Invisible Circle */
 circle[node_type="label"] {
-    fill: transparent;   
-    stroke: none;        
-    pointer-events: none; 
+    fill: transparent;
+    stroke: none;
+    pointer-events: none;
 }
 
 /* Text styling for Label (Unclickable) */
@@ -321,8 +422,8 @@ line[link_type="backbone"] {
 line[link_type="label_link"] {
     stroke: #ADADAD;
     stroke-width: 1px;
-    stroke-dasharray: 3.5, 4.9; 
-    opacity: 1; 
+    stroke-dasharray: 3.5, 4.9;
+    opacity: 1;
     display: inline;
 }
 
@@ -349,7 +450,8 @@ circle[node_type="pseudo"] {
     z-index: 900;
     display: flex;
     flex-direction: column;
-    align-items: flex-end; /* Aligns panel to the right */
+    align-items: flex-end;
+    /* Aligns panel to the right */
 }
 
 /* Gear Button */
@@ -357,12 +459,13 @@ circle[node_type="pseudo"] {
     width: 45px;
     height: 45px;
     border-radius: 50%;
-    border: 1px solid rgba(255,255,255,0.2);
-    background: rgba(30, 30, 46, 0.85); /* Matches mutation menu */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(30, 30, 46, 0.85);
+    /* Matches mutation menu */
     color: var(--text-secondary);
     font-size: 1.5rem;
     cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(4px);
     transition: all 0.2s ease;
     display: flex;
@@ -379,17 +482,18 @@ circle[node_type="pseudo"] {
 /* Settings Panel */
 .settings-panel {
     position: absolute;
-    bottom: 60px; /* Appears above the button */
+    bottom: 60px;
+    /* Appears above the button */
     right: 0;
     width: 220px;
-    
+
     background: rgba(30, 30, 46, 0.85);
     backdrop-filter: blur(6px);
-    border: 1px solid rgba(255,255,255,0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
     padding: 15px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-    
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+
     transform-origin: bottom right;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
@@ -422,7 +526,10 @@ circle[node_type="pseudo"] {
     cursor: pointer;
     line-height: 0.5;
 }
-.close-text-btn:hover { color: white; }
+
+.close-text-btn:hover {
+    color: white;
+}
 
 .setting-group label {
     display: block;
@@ -447,7 +554,8 @@ circle[node_type="pseudo"] {
     cursor: pointer;
     font-size: 0.9rem;
     color: #ddd;
-    text-transform: none; /* Reset uppercase from parent */
+    text-transform: none;
+    /* Reset uppercase from parent */
 }
 
 .radio-label input[type="radio"] {
@@ -460,7 +568,8 @@ circle[node_type="pseudo"] {
 .level-menu {
     width: 100%;
     height: 100%;
-    display: flex; /* Flex to center content */
+    display: flex;
+    /* Flex to center content */
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -475,6 +584,7 @@ circle[node_type="pseudo"] {
     letter-spacing: 4px;
     background: linear-gradient(90deg, var(--accent-blue), var(--accent-green));
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -497,7 +607,7 @@ circle[node_type="pseudo"] {
     justify-content: center;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .level-card:hover {
@@ -538,8 +648,17 @@ circle[node_type="pseudo"] {
     font-size: 0.8rem;
     align-self: flex-start;
 }
-.back-btn:hover { border-color: white; color: white; }
+
+.back-btn:hover {
+    border-color: white;
+    color: white;
+}
 
 /* Hide helper class */
-.hidden-display { display: none !important; }
-.flex-display { display: flex !important; }
+.hidden-display {
+    display: none !important;
+}
+
+.flex-display {
+    display: flex !important;
+}
