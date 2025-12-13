@@ -10,6 +10,15 @@ let container = new FornaContainer("#rna_container", {
     'applyForce': true
 });
 
+// Initialize the target visualization container (Non-interactive)
+// Initialize the target visualization container (Non-interactive)
+let targetContainer = new FornaContainer("#target-rna-container", {
+    'animation': true,
+    'zoomable': false,
+    'allowPanning': false, // Attempt to disable panning via options
+    'applyForce': true     // Re-enable force to avoid breaking main container's physics if shared
+});
+
 // Level Definitions
 const LEVELS = [
     {
@@ -77,6 +86,21 @@ function startLevel(lvlIndex) {
         // 2. Now that dimensions are correct, draw the RNA
         initGame();
     }, 50);
+
+    // 5. Initialize Target Container
+    setTimeout(() => {
+        targetContainer.clearNodes();
+        targetContainer.addRNA(targetStructure, {
+            sequence: " ".repeat(targetStructure.length), // Empty sequence to hide letters (mostly)
+            structure: targetStructure
+        });
+
+        // Force color update immediately after adding
+        setTimeout(() => {
+            updateTargetHighlighting(lvl.startSeq); // Check initial state
+            targetContainer.center_view();
+        }, 100);
+    }, 100);
 }
 
 /**
@@ -87,7 +111,9 @@ function showMenu() {
     document.getElementById('level-menu').style.display = 'flex';
 
     // Optional: Clear container to save memory?
+    // Optional: Clear container to save memory?
     container.clearNodes();
+    targetContainer.clearNodes();
 }
 
 /**
@@ -102,6 +128,7 @@ function initGame() {
 
     // Calculate initial metrics immediately so the numbers aren't empty
     // (We do a dummy fetch or just set 0 if we assume start isn't solved)
+
     // For now, let's just render the RNA:
     container.addRNA(options.structure, options);
 
@@ -119,6 +146,7 @@ function initGame() {
         .then(r => r.json())
         .then(data => {
             updateMetrics(data);
+
             // Re-center after initial load
             setTimeout(() => container.center_view(), 100);
         });
@@ -209,6 +237,9 @@ function mutateNode(newBase) {
         .then(data => {
             currentSequence = data.sequence;
 
+            // Update Target Highlights based on new structure
+            updateTargetHighlighting(data.structure);
+
             // 2. Smooth morph to the new structure
             if (typeof container.transitionRNA === 'function') {
                 container.transitionRNA(data.structure, {
@@ -231,6 +262,54 @@ function mutateNode(newBase) {
             setTimeout(attachClickListeners, 500);
         })
         .catch(error => console.error('Error:', error));
+}
+
+/**
+ * Updates the target structure visualization.
+ * Highlights nodes in Green if they match the desired pairing state in the current structure.
+ */
+function updateTargetHighlighting(currentStructureString) {
+    if (!targetStructure || !currentStructureString) return;
+
+    // We can't easily access the internal Pair Table of Fornac without parsing dot-bracket ourselves
+    // But Fornac likely has a helper, or we write a simple parser. 
+    // Let's write a simple dot-bracket parser to get pair map: [index -> pairIndex or -1]
+
+    function getPairMap(structure) {
+        let stack = [];
+        let map = new Array(structure.length).fill(-1);
+        for (let i = 0; i < structure.length; i++) {
+            if (structure[i] === '(') {
+                stack.push(i);
+            } else if (structure[i] === ')') {
+                let open = stack.pop();
+                if (open !== undefined) {
+                    map[open] = i;
+                    map[i] = open;
+                }
+            }
+        }
+        return map;
+    }
+
+    const targetPairs = getPairMap(targetStructure);
+    const currentPairs = getPairMap(currentStructureString);
+
+    // Identify which indices are correct
+    let correctIndices = new Set();
+    for (let i = 0; i < targetPairs.length; i++) {
+        if (targetPairs[i] === currentPairs[i]) {
+            correctIndices.add(i);
+        }
+    }
+
+    // Apply styles to targetContainer nodes
+    // Access D3 selection of target container nodes
+    d3.select("#target-rna-container").selectAll('.node')
+        .classed('correct', function (d) {
+            // d.num is 1-based index usually
+            return correctIndices.has(d.num - 1);
+        });
 }
 
 function getMoleculeCentroid() {
@@ -264,7 +343,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 'C': '#32CD32', 'c': '#32CD32',
                 'T': '#1E90FF', 't': '#1E90FF'
             };
-            d3.selectAll('.node[node_type="nucleotide"]')
+            // Only apply to MAIN container, not target container
+            d3.select("#rna_container").selectAll('.node[node_type="nucleotide"]')
                 .style('fill', function (d) { return colorMap[d.name] || 'white'; });
         }
     };

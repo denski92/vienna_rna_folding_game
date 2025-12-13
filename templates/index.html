@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RNA Builders | Lange Nacht der Forschung</title>
-    
+
     <link rel="stylesheet" href="{{ url_for('static', filename='css/fornac.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
+
 <body>
 
     <header class="app-header">
@@ -21,7 +23,7 @@
     </header>
 
     <main class="main-stage">
-        
+
         <section id="level-menu" class="level-menu">
             <h2>Select Mission</h2>
             <div class="level-grid">
@@ -53,10 +55,10 @@
         </section>
 
         <div id="game-view" class="game-mode-layout" style="display: none;">
-            
+
             <section class="control-panel">
                 <button class="back-btn" onclick="showMenu()">← Missions</button>
-                
+
                 <div>
                     <h2 id="level-title">Mission Status</h2>
                     <p>System: <span style="color: #32CD32;">Online</span></p>
@@ -72,7 +74,7 @@
                 <div class="status-group">
                     <h3>Stability Energy (ΔG)</h3>
                     <div class="metric-display">
-                        <span id="mfe-val">--</span> 
+                        <span id="mfe-val">--</span>
                         <span class="metric-unit">kcal/mol</span>
                     </div>
                 </div>
@@ -82,11 +84,16 @@
                         Select a node on the right, then choose a base from the popup menu to mutate.
                     </p>
                 </div>
+
+                <div id="target-view-container" class="target-view-container">
+                    <h3>Target Structure</h3>
+                    <div id="target-rna-container"></div>
+                </div>
             </section>
 
             <section class="viz-panel">
                 <div id="rna_container"></div>
-                
+
                 <div class="settings-widget">
                     <button id="settings-btn" class="settings-btn" title="Settings">⚙️</button>
                     <div id="settings-panel" class="settings-panel hidden">
@@ -97,9 +104,12 @@
                         <div class="setting-group">
                             <label>Color Scheme</label>
                             <div class="radio-group">
-                                <label class="radio-label"><input type="radio" name="color-scheme" value="structure" checked> <span>Structure</span></label>
-                                <label class="radio-label"><input type="radio" name="color-scheme" value="sequence"> <span>Nucleotide Type</span></label>
-                                <label class="radio-label"><input type="radio" name="color-scheme" value="positions"> <span>Position</span></label>
+                                <label class="radio-label"><input type="radio" name="color-scheme" value="structure"
+                                        checked> <span>Structure</span></label>
+                                <label class="radio-label"><input type="radio" name="color-scheme" value="sequence">
+                                    <span>Nucleotide Type</span></label>
+                                <label class="radio-label"><input type="radio" name="color-scheme" value="positions">
+                                    <span>Position</span></label>
                             </div>
                         </div>
                     </div>
@@ -110,8 +120,9 @@
     </main>
 
     <footer class="app-footer">
-        A RNA folding game inspired by <a href="https://eternagame.org" target="_blank">Eterna</a>. 
-        Powered by <a href="https://www.tbi.univie.ac.at/RNA/" target="_blank">ViennaRNA</a> and <a href="http://www.viennarna.at/forna/" target="_blank">Forna</a>.
+        A RNA folding game inspired by <a href="https://eternagame.org" target="_blank">Eterna</a>.
+        Powered by <a href="https://www.tbi.univie.ac.at/RNA/" target="_blank">ViennaRNA</a> and <a
+            href="http://www.viennarna.at/forna/" target="_blank">Forna</a>.
     </footer>
     <div id="mutation-menu" class="mutation-menu" style="display: none;">
         <div class="menu-header">
@@ -122,10 +133,10 @@
             <svg class="connection-lines" viewBox="0 0 100 100" preserveAspectRatio="none">
                 <!-- A-U Link (Top Row) -->
                 <line id="line-AU" x1="25%" y1="25%" x2="75%" y2="25%" />
-                
+
                 <!-- G-C Link (Bottom Row) -->
                 <line id="line-GC" x1="25%" y1="75%" x2="75%" y2="75%" />
-                
+
                 <!-- G-U Link (Diagonal: Top-Right to Bottom-Right is not right, U is Top-Right, G is Bottom-Right) -->
                 <!-- Layout:
                      A (TL)  U (TR)
@@ -147,7 +158,8 @@
     <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
     <script src="{{ url_for('static', filename='js/d3.js') }}"></script>
     <script src="{{ url_for('static', filename='js/fornac.js') }}"></script>
-    
+
     <script src="{{ url_for('static', filename='js/game.js') }}"></script>
 </body>
+
 </html>
