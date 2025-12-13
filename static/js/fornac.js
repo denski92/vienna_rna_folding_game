@@ -17,7 +17,7 @@ function FornaContainer(h, f) {
         }; d.addRNA = function (b, e) { var g = d.createInitialLayout(b, e); 1 === arguments.length && (e = {}); "avoidOthers" in e ? d.addRNAJSON(g, e.avoidOthers) : d.addRNAJSON(g, !0); return g }; d.addRNAJSON = function (b, e) {
             var g, f; e && (g = 0 < d.graph.nodes.length ? d3.max(d.graph.nodes.map(function (b) { return b.x })) : 0, f = d3.min(b.nodes.map(function (b) { return b.x })), b.nodes.forEach(function (b) {
                 b.x +=
-                g - f; b.px += g - f
+                    g - f; b.px += g - f
             })); b.nodes.forEach(function (d) { d.rna = b }); d.rnas[b.uid] = b; d.recalculateGraph(); d.update(); d.center_view()
         }; d.transitionRNA = function (newStructure, opt) {
             opt = opt || {};
@@ -89,10 +89,10 @@ function FornaContainer(h, f) {
             });
         }; d.recalculateGraph = function (b) {
             d.graph.nodes =
-            []; d.graph.links = []; for (var e in d.rnas) d.graph.nodes = d.graph.nodes.concat(d.rnas[e].nodes), d.graph.links = d.graph.links.concat(d.rnas[e].links); for (var g = {}, f = 0; f < d.graph.nodes.length; f++)g[d.graph.nodes[f].uid] = d.graph.nodes[f]; d.graph.links.forEach(function (b) { b.source = g[b.source.uid]; b.target = g[b.target.uid] }); for (f = 0; f < d.extraLinks.length; f++) {
-                d.extraLinks[f].target.uid in g || console.log("not there:", d.extraLinks[f]); d.extraLinks[f].source = g[d.extraLinks[f].source.uid]; d.extraLinks[f].target =
-                    g[d.extraLinks[f].target.uid]; if ("intermolecule" == d.extraLinks[f].link_type) for (fake_links = d.graph.links.filter(function (b) { return (b.source == d.extraLinks[f].source || b.source == d.extraLinks[f].target || b.target == d.extraLinks[f].source || b.target == d.extraLinks[f].source) && "fake" == b.link_type }), b = 0; b < fake_links.length; b++)e = d.graph.links.indexOf(fake_links[b]), d.graph.links.splice(e, 1); F.links.push(d.extraLinks[f])
-            }
+                []; d.graph.links = []; for (var e in d.rnas) d.graph.nodes = d.graph.nodes.concat(d.rnas[e].nodes), d.graph.links = d.graph.links.concat(d.rnas[e].links); for (var g = {}, f = 0; f < d.graph.nodes.length; f++)g[d.graph.nodes[f].uid] = d.graph.nodes[f]; d.graph.links.forEach(function (b) { b.source = g[b.source.uid]; b.target = g[b.target.uid] }); for (f = 0; f < d.extraLinks.length; f++) {
+                    d.extraLinks[f].target.uid in g || console.log("not there:", d.extraLinks[f]); d.extraLinks[f].source = g[d.extraLinks[f].source.uid]; d.extraLinks[f].target =
+                        g[d.extraLinks[f].target.uid]; if ("intermolecule" == d.extraLinks[f].link_type) for (fake_links = d.graph.links.filter(function (b) { return (b.source == d.extraLinks[f].source || b.source == d.extraLinks[f].target || b.target == d.extraLinks[f].source || b.target == d.extraLinks[f].source) && "fake" == b.link_type }), b = 0; b < fake_links.length; b++)e = d.graph.links.indexOf(fake_links[b]), d.graph.links.splice(e, 1); F.links.push(d.extraLinks[f])
+                }
         }; d.addNodes = function (b) {
             b.links.forEach(function (d) {
                 "number" == typeof d.source && (d.source =
@@ -100,7 +100,7 @@ function FornaContainer(h, f) {
             }); 0 < d.graph.nodes.length ? (max_x = d3.max(d.graph.nodes.map(function (b) { return b.x })), max_y = d3.max(d.graph.nodes.map(function (b) { return b.y }))) : max_y = max_x = 0; b.nodes.forEach(function (b) { b.rna.uid in d.rnas || (d.rnas[b.rna.uid] = b.rna); b.x += max_x; b.px += max_x }); r = new RNAGraph("", ""); r.nodes = b.nodes; r.links = b.links; d.recalculateGraph(); d.update(); d.center_view()
         }; d.addCustomColors = function (b) { d.customColors = b }; d.clearNodes = function () {
             d.graph.nodes =
-            []; d.graph.links = []; d.rnas = {}; d.extraLinks = []; d.update()
+                []; d.graph.links = []; d.rnas = {}; d.extraLinks = []; d.update()
         }; d.toJSON = function () { return JSON.stringify({ rnas: d.rnas, extraLinks: d.extraLinks }, function (b, d) { if ("rna" != b) return d }, "\t") }; d.fromJSON = function (b) {
             try { var e = JSON.parse(b), g = e.rnas, f = e.extraLinks } catch (n) { throw n; } for (uid in g) "rna" == g[uid].type ? (r = new RNAGraph, r.seq = g[uid].seq, r.dotbracket = g[uid].dotbracket, r.circular = g[uid].circular, r.pairtable = g[uid].pairtable, r.uid = g[uid].uid, r.struct_name = g[uid].struct_name, r.nodes = g[uid].nodes, r.links =
                 g[uid].links, r.rnaLength = g[uid].rnaLength, r.elements = g[uid].elements, r.nucs_to_nodes = g[uid].nucs_to_nodes, r.pseudoknot_pairs = g[uid].pseudoknot_pairs) : (r = new ProteinGraph, r.size = g[uid].size, r.nodes = g[uid].nodes, r.uid = g[uid].uid), d.addRNAJSON(r, !1); f.forEach(function (b) { d.extraLinks.push(b) }); d.recalculateGraph(); d.update()
@@ -111,7 +111,7 @@ function FornaContainer(h, f) {
                     return "undefined" == typeof d.customColors ? "white" : d.customColors.color_values.hasOwnProperty(e.struct_name) && d.customColors.color_values[e.struct_name].hasOwnProperty(e.num) ?
                         (molecule_colors = d.customColors.color_values[e.struct_name], b(molecule_colors, e, scale)) : d.customColors.color_values.hasOwnProperty("") ? (molecule_colors = d.customColors.color_values[""], b(molecule_colors, e, scale)) : "white"
                 }))
-        }; window.addEventListener("resize", k, !1); zoomer = d3.behavior.zoom().scaleExtent([.1, 10]).x(D).y(E).on("zoomstart", function () { var b = p.selectAll("g.gnode").selectAll(".outline_node"); b.each(function (b) { b.selected = !1; b.previouslySelected = !1 }); b.classed("selected", !1) }).on("zoom", function () {
+        }; window.addEventListener("resize", k, !1); var zoomer = d3.behavior.zoom().scaleExtent([.1, 10]).x(D).y(E).on("zoomstart", function () { var b = p.selectAll("g.gnode").selectAll(".outline_node"); b.each(function (b) { b.selected = !1; b.previouslySelected = !1 }); b.classed("selected", !1) }).on("zoom", function () {
             v.attr("transform",
                 "translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")")
         }); d3.select(h).select("svg").remove(); var u = d3.select(h).attr("tabindex", 1).on("keydown.brush", n).on("keyup.brush", l).each(function () { this.focus() }).append("svg:svg").attr("width", d.options.svgW).attr("height", d.options.svgH).attr("id", "plotting-area"), t = u.append("svg:style"); $.get(location.origin + window.location.pathname.replace(/[^\/]+$/g, "") + "css/fornac.css", function (b) { t.text(b.replace(/[\s\n]/g, "")) }); d.options.svg = u; d.zoomer = zoomer; var x = u.append("svg:g").on("mousemove",
@@ -123,11 +123,11 @@ function FornaContainer(h, f) {
                     };
     d.force = d3.layout.force().charge(function (b) { return -30 }).chargeDistance(300).friction(.35).linkDistance(function (b) { return 15 * b.value }).linkStrength(function (b) { return b.link_type in d.linkStrengths ? d.linkStrengths[b.link_type] : d.linkStrengths.other }).gravity(0).nodes(d.graph.nodes).links(d.graph.links).chargeDistance(110).size([d.options.svgW, d.options.svgH]); var H = v.append("line").attr("class", "drag_line").attr("x1", 0).attr("y1", 0).attr("x2", 0).attr("y2", 0), C = !1, B = !1; d.resumeForce = function () {
         d.animation &&
-        d.force.resume()
+            d.force.resume()
     }; var G = d3.behavior.drag().on("dragstart", function (b) { d3.event.sourceEvent.stopPropagation(); b.selected || B || p.selectAll("g.gnode").selectAll(".outline_node").classed("selected", function (b) { return b.selected = d.options.applyForce && (b.previouslySelected = !1) }); d3.select(this).select(".outline_node").classed("selected", function (e) { b.previouslySelected = b.selected; return b.selected = d.options.applyForce && !0 }); e(b).each(function (b) { b.fixed |= 2 }) }).on("drag", function (b) {
         e(b).each(function (b) {
             b.x +=
-            d3.event.dx; b.y += d3.event.dy; b.px += d3.event.dx; b.py += d3.event.dy
+                d3.event.dx; b.y += d3.event.dy; b.px += d3.event.dx; b.py += d3.event.dy
         }); d.resumeForce(); d3.event.sourceEvent.preventDefault()
     }).on("dragend", function (b) { e(b).each(function (b) { b.fixed &= -7 }) }); d3.select(h).on("keydown", n).on("keyup", l).on("contextmenu", function () { d3.event.preventDefault() }); link_key = function (b) { return b.uid }; node_key = function (b) { return key = b.uid }; update_rna_graph = function (b) {
         var e = b.get_positions("nucleotide"), g = b.get_positions("label"), f = b.get_uids(); b.recalculateElements().elementsToJson().addPseudoknots().addPositions("nucleotide",
@@ -178,10 +178,10 @@ function ColorScheme(h) {
     var f = this; f.colorsText = h; f.parseRange = function (f) { for (var b = f.split(","), e = [], g = 0; g < b.length; g++) { var n = b[g].split("-"); if (1 == n.length) e.push(parseInt(n[0])); else if (2 == n.length) for (var l = parseInt(n[0]), n = parseInt(n[1]); l <= n; l++)e.push(l); else console.log("Malformed range (too many dashes):", f) } return e }; f.parseColorText = function (h) {
         h = h.split("\n"); for (var b = "", e = 1, g = { color_values: { "": {} }, range: ["white", "steelblue"] }, n = [], l = 0; l < h.length; l++)if (">" == h[l][0]) b = h[l].trim().slice(1),
             e = 1, g.color_values[b] = {}; else {
-                words = h[l].trim().split(/[\s]+/); for (var d = 0; d < words.length; d++)if (isNaN(words[d])) if (0 === words[d].search("range")) parts = words[d].split("="), parts_right = parts[1].split(":"), g.range = [parts_right[0], parts_right[1]]; else if (0 == words[d].search("domain")) parts = words[d].split("="), parts_right = parts[1].split(":"), g.domain = [parts_right[0], parts_right[1]]; else {
-                    parts = words[d].split(":"); nums = f.parseRange(parts[0]); color = parts[1]; for (var w = 0; w < nums.length; w++)isNaN(color) ? g.color_values[b][nums[w]] =
-                        color : (g.color_values[b][nums[w]] = +color, n.push(Number(color)))
-                } else g.color_values[b][e] = Number(words[d]), e += 1, n.push(Number(words[d]))
+            words = h[l].trim().split(/[\s]+/); for (var d = 0; d < words.length; d++)if (isNaN(words[d])) if (0 === words[d].search("range")) parts = words[d].split("="), parts_right = parts[1].split(":"), g.range = [parts_right[0], parts_right[1]]; else if (0 == words[d].search("domain")) parts = words[d].split("="), parts_right = parts[1].split(":"), g.domain = [parts_right[0], parts_right[1]]; else {
+                parts = words[d].split(":"); nums = f.parseRange(parts[0]); color = parts[1]; for (var w = 0; w < nums.length; w++)isNaN(color) ? g.color_values[b][nums[w]] =
+                    color : (g.color_values[b][nums[w]] = +color, n.push(Number(color)))
+            } else g.color_values[b][e] = Number(words[d]), e += 1, n.push(Number(words[d]))
         } "domain" in g || (g.domain = [Math.min.apply(null, n), Math.max.apply(null, n)]); f.colors_json = g; return f
     }; f.normalizeColors = function () {
         var h, b; for (b in f.colors_json) {
