@@ -17,8 +17,8 @@ A web-based interactive game where players mutate RNA sequences (A, U, C, G) to 
 
 1.  **Clone the repository:**
     ```bash
-    git clone <repository_url>
-    cd rna_folding_game
+    git clone git@github.com:denski92/vienna_rna_folding_game.git
+    cd vienna_rna_folding_game
     ```
 
 2.  **Create and activate the Conda environment:**
