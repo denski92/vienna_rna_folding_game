@@ -29,7 +29,7 @@ const LEVELS = [
     {
         name: "Internal Loop",
         target: "((((((....((....))....))))))",
-        startSeq: "GGGGGGAAAAGGGGAAAACCCCACCCCC" // 28 nts
+        startSeq: "GGGGGGAAAAGGAAAACCAAAACCCCCC" // 28 nts
     },
     {
         name: "The Bulge",
