@@ -94,7 +94,7 @@ function startLevel(lvlIndex) {
         });
 
         setTimeout(() => {
-            updateTargetHighlighting(lvl.startSeq);
+            updateTargetHighlighting(lvl.target);
             targetContainer.center_view();
         }, 100);
     }, 100);
@@ -159,9 +159,11 @@ function updateMetrics(data) {
     const distEl = document.getElementById('dist-val');
     if (data.distance === 0) {
         distEl.style.color = '#32CD32'; // Green
+        distEl.style.textShadow = '0 0 10px rgba(50, 205, 50, 0.4)';
         distEl.innerText = "SOLVED!";
     } else {
         distEl.style.color = '#FF4500'; // Red
+        distEl.style.textShadow = '0 0 10px rgba(255, 69, 0, 0.4)';
     }
 }
 
@@ -308,6 +310,9 @@ function updateTargetHighlighting(currentStructureString) {
     d3.select("#target-rna-container").selectAll('.node')
         .classed('correct', function (d) {
             return correctIndices.has(d.num - 1);
+        })
+        .classed('wrong', function (d) {
+            return !correctIndices.has(d.num - 1);
         });
 }
 

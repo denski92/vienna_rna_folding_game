@@ -149,6 +149,7 @@ body {
 
 .metric-value.distance {
     color: var(--target-distance);
+    text-shadow: 0 0 10px rgba(250, 204, 21, 0.4);
 }
 
 .metric-unit {
@@ -767,6 +768,12 @@ circle[node_type="pseudo"] {
 #target-rna-container .node[node_type="nucleotide"].correct {
     fill: #32CD32 !important;
     filter: drop-shadow(0 0 5px #32CD32);
+}
+
+/* Wrong nodes are red */
+#target-rna-container .node[node_type="nucleotide"].wrong {
+    fill: #FF4500 !important;
+    filter: drop-shadow(0 0 5px #FF4500);
 }
 
 /* Hide Labels for Nucleotides (A, G, C, U) */
