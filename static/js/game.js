@@ -184,6 +184,14 @@ function attachClickListeners() {
                 .style('stroke-opacity', '0.95')
                 .style('filter', 'drop-shadow(0 0 3px #FFD700) drop-shadow(0 0 15px #FFD700)');
 
+            // Highlight corresponding node in target container
+            d3.select("#target-rna-container").selectAll('.node')
+                .filter(function (t) { return t.num === d.num; })
+                .style('stroke', '#ffe343ff', 'important')
+                .style('stroke-width', '6px', 'important')
+                .style('stroke-opacity', '0.95', 'important')
+                .style('filter', 'drop-shadow(0 0 3px #FFD700) drop-shadow(0 0 15px #FFD700)', 'important');
+
             selectedNodeIndex = d.num - 1;
 
             // Show Menu
