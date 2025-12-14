@@ -17,6 +17,39 @@
 </head>
 
 <body>
+    <!-- SVG Filters for Bio-Tech Visuals -->
+    <svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
+        <defs>
+            <!-- 1. Glass Sphere Effect (Generic for any fill color) -->
+            <filter id="glass-sphere" x="-50%" y="-50%" width="200%" height="200%">
+                <!-- Base blur for volume -->
+                <feGaussianBlur in="SourceAlpha" stdDeviation="1" result="blur" />
+
+                <!-- Specular Highlight (The 'Sheen') -->
+                <feSpecularLighting in="blur" surfaceScale="5" specularConstant="0.9" specularExponent="15"
+                    lighting-color="white" result="specOut">
+                    <fePointLight x="-20" y="-40" z="50" />
+                </feSpecularLighting>
+
+                <!-- Composite Highlight over Source -->
+                <feComposite in="specOut" in2="SourceAlpha" operator="in" result="specOut" />
+                <feComposite in="SourceGraphic" in2="specOut" operator="arithmetic" k1="0" k2="1" k3="1" k4="0"
+                    result="litStar" />
+
+                <!-- Outer Glow/Shadow for popping effect -->
+                <feDropShadow dx="0" dy="0" stdDeviation="1.5" flood-color="rgba(0,0,0,0.5)" />
+            </filter>
+
+            <!-- 2. Bond Glow (Intense) -->
+            <filter id="glow-bond">
+                <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+                <feMerge>
+                    <feMergeNode in="coloredBlur" />
+                    <feMergeNode in="SourceGraphic" />
+                </feMerge>
+            </filter>
+        </defs>
+    </svg>
 
     <header class="app-header">
         <div class="app-title">

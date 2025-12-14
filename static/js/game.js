@@ -6,7 +6,9 @@
 let container = new FornaContainer("#rna_container", {
     'animation': true,
     'zoomable': true,
-    'applyForce': true
+    'applyForce': true,
+    'displayBackground': false,
+    'labelInterval': 5
 });
 
 // Initialize target container (Non-interactive)
@@ -14,7 +16,8 @@ let targetContainer = new FornaContainer("#target-rna-container", {
     'animation': true,
     'zoomable': false,
     'allowPanning': false,
-    'applyForce': true
+    'applyForce': true,
+    'labelInterval': 5
 });
 
 // Level Definitions
@@ -115,7 +118,8 @@ function initGame() {
     container.clearNodes();
     let options = {
         'sequence': currentSequence,
-        'structure': targetStructure
+        'structure': targetStructure,
+        'labelInterval': 5
     };
 
     // Calculate initial metrics immediately so the numbers aren't empty

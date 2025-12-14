@@ -170,17 +170,37 @@ body {
 /* Right Panel: Visualization */
 .viz-panel {
     flex: 1;
-    background: var(--bg-canvas);
+    background-color: var(--bg-canvas);
+    /* Bio-tech Grid Pattern */
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 30px 30px;
+
     border-radius: 12px;
     overflow: hidden;
     position: relative;
     border: 1px solid var(--border-subtle);
+    box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.6);
 }
 
 #rna_container {
     width: 100%;
     height: 100%;
     outline: none;
+}
+
+#rna_container svg {
+    background: transparent !important;
+    background-color: transparent !important;
+}
+
+#rna_container svg>rect,
+#zrect,
+.displayBackground {
+    fill: transparent !important;
+    fill-opacity: 0 !important;
+    stroke: none !important;
 }
 
 
@@ -394,9 +414,11 @@ body {
 /* Nucleotides (White) */
 .node {
     fill: white;
-    stroke: #ccc;
-    stroke-width: 1px;
+    stroke: none;
     cursor: pointer;
+    /* Glass Sphere Effect */
+    filter: url(#glass-sphere);
+    transition: fill 0.3s ease;
 }
 
 /* Disable mouse interactions for the nucleotide letters */
@@ -412,19 +434,25 @@ circle[node_type="label"] {
     fill: transparent;
     stroke: none;
     pointer-events: none;
+    filter: none !important;
+    /* No glass effect on hidden/label nodes */
 }
 
 /* Text styling for Label (Unclickable) */
-g.gnode[node_type="label"] text {
+text[label_type="label"] {
     pointer-events: none;
     user-select: none;
+    fill: #facc15 !important;
+    /* Brighter Yellow */
+    font-weight: bold;
+    font-size: 12px;
 }
 
 /* Backbone Styling: Your #ADADAD tweak */
 line[link_type="backbone"] {
     stroke: #ADADAD;
-    stroke-width: 2px;
-    stroke-opacity: 1;
+    stroke-width: 3px;
+    stroke-opacity: 0.6;
     display: inline;
 }
 
@@ -440,7 +468,10 @@ line[link_type="label_link"] {
 /* Base Pairs: Bright Red */
 line[link_type="basepair"] {
     stroke: #ff4d4d;
-    stroke-width: 2px;
+    stroke-width: 3px;
+    opacity: 0.8;
+    filter: drop-shadow(0 0 4px #ff4d4d);
+    /* Glow */
 }
 
 /* Hide internal physics helper nodes */
@@ -748,11 +779,12 @@ circle[node_type="pseudo"] {
 /* 1. Show the text for positioning labels */
 #target-rna-container .node-label[label_type="label"] {
     display: block !important;
-    font-size: 8px;
+    font-size: 10px;
     /* Adjust size for target view */
     pointer-events: none;
-    fill: black;
-    /* Text color */
+    fill: #facc15 !important;
+    /* Bright Yellow */
+    font-weight: bold;
 }
 
 /* 2. Style the Label Node itself (the circle) */
@@ -787,4 +819,5 @@ circle[node_type="pseudo"] {
     stroke: #888 !important;
     /* Grey basepairs for target */
     stroke-width: 1px !important;
+    filter: none !important;
 }
