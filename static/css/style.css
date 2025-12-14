@@ -429,7 +429,7 @@ body {
     -moz-user-select: none;
 }
 
-/* Override for LABEL nodes (10, 20...): Invisible Circle */
+/* Override for LABEL nodes (5, 10...): Invisible Circle */
 circle[node_type="label"] {
     fill: transparent;
     stroke: none;
@@ -442,10 +442,10 @@ circle[node_type="label"] {
 text[label_type="label"] {
     pointer-events: none;
     user-select: none;
-    fill: #facc15 !important;
+    fill: #ffffe5 !important;
     /* Brighter Yellow */
     font-weight: bold;
-    font-size: 12px;
+    font-size: 10px;
 }
 
 /* Backbone Styling: Your #ADADAD tweak */
@@ -779,7 +779,7 @@ circle[node_type="pseudo"] {
 /* 1. Show the text for positioning labels */
 #target-rna-container .node-label[label_type="label"] {
     display: block !important;
-    font-size: 10px;
+    font-size: 12px;
     /* Adjust size for target view */
     pointer-events: none;
     fill: #facc15 !important;

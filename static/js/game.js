@@ -89,7 +89,8 @@ function startLevel(lvlIndex) {
         targetContainer.clearNodes();
         targetContainer.addRNA(targetStructure, {
             sequence: " ".repeat(targetStructure.length), // Hide letters
-            structure: targetStructure
+            structure: targetStructure,
+            'labelInterval': 5
         });
 
         setTimeout(() => {
