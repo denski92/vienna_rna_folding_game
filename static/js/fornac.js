@@ -272,7 +272,7 @@ function RNAUtilities() {
             0); u = b - 1; for (e++; b != e;)if ((t = f[b]) && 0 != b) { h += 2; x = b; A = t; p[++k] = x; p[++k] = A; b = t + 1; y = x; v = A; z = 0; do x++, A--, z++; while (f[x] == A); t = z - 2; if (2 <= z && (g[y + 1 + t] += d, g[v - 1 - t] += d, g[y] += d, g[v] += d, 2 < z)) for (; 1 <= t; t--)g[y + t] = Math.PI, g[v - t] = Math.PI; l[++stk] = z; loop(x, A, f) } else b++, h++, F++; b = Math.PI * (h - 2) / h; p[++k] = e; e = 0 > u ? 0 : u; for (u = 1; u <= k; u++) { f = p[u] - e; for (t = 0; t <= f; t++)g[e + t] += b; if (u > k) break; e = p[++u] } n[++lp] = F
     }; loop(0, b + 1, h); n[lp] -= 2; e = 0; f[0] = 100; k[0] = 100; poss = []; poss.push([f[0], k[0]]); for (h = 1; h < b; h++)f[h] = f[h - 1] + 15 * Math.cos(e),
         k[h] = k[h - 1] + 15 * Math.sin(e), poss.push([f[h], k[h]]), e += Math.PI - g[h + 1]; return poss
-};// Rigid transform (translation+rotation+scale) that best fits target to current
+};// Best fit transform (translation+rotation+scale)
 function bestFitTransform(current, target) {
     if (!current.length || !target.length) return function (p) { return p; };
     var n = Math.min(current.length, target.length);

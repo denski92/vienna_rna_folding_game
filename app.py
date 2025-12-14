@@ -1,8 +1,4 @@
-"""
-Backend server for the RNA Folding Game.
-Integrates Flask with the ViennaRNA Python bindings (RNAlib) to perform
-real-time thermodynamic folding and structure comparison.
-"""
+"""Backend for RNA Folding Game. Integrates Flask with ViennaRNA."""
 
 from flask import Flask, render_template, request, jsonify
 import RNA
@@ -10,17 +6,7 @@ import RNA
 app = Flask(__name__)
 
 def calculate_metrics(sequence, target_structure):
-    """
-    Computes the Minimum Free Energy (MFE) structure and compares it to the target.
-
-    Args:
-        sequence (str): The RNA sequence (AUCG).
-        target_structure (str): The goal secondary structure in dot-bracket notation.
-
-    Returns:
-        dict: Contains the folded structure, MFE value, base-pair distance,
-              and a boolean 'solved' flag.
-    """
+    """Computes MFE structure and compares to target."""
     current_structure, mfe = RNA.fold(sequence)
     distance = RNA.bp_distance(current_structure, target_structure)
 
@@ -34,22 +20,12 @@ def calculate_metrics(sequence, target_structure):
 
 @app.route('/')
 def index():
-    """
-    Serves the main game interface.
-    """
+    """Serves main game interface."""
     return render_template('index.html')
 
 @app.route('/api/mutate', methods=['POST'])
 def mutate_sequence():
-    """
-    API Endpoint: Processes a sequence mutation.
-
-    Expected JSON payload:
-    {
-        "sequence": "GGG...CCC",
-        "target": "((...))"
-    }
-    """
+    """API: Processes sequence mutation. Expects {"sequence": "...", "target": "..."}."""
     data = request.json
     sequence = data.get('sequence', '')
     target = data.get('target', '')
@@ -61,9 +37,5 @@ def mutate_sequence():
     return jsonify(result)
 
 if __name__ == '__main__':
-    """
-    Runs the Flask development server.
-    Note: For the final kiosk deployment, a WSGI server like Waitress or Gunicorn
-    should be used instead.
-    """
+    # Runs the Flask development server.
     app.run(host='0.0.0.0', port=5000, debug=True)

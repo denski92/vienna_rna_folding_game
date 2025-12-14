@@ -1,6 +1,5 @@
 /**
- * Frontend logic for the RNA Folding Game.
- * Handles initialization, click interaction, mutation logic, and Level Management.
+ * Frontend logic: Initialization, interaction, mutation, and Level Management.
  */
 
 // Initialize the visualization container
@@ -10,46 +9,45 @@ let container = new FornaContainer("#rna_container", {
     'applyForce': true
 });
 
-// Initialize the target visualization container (Non-interactive)
-// Initialize the target visualization container (Non-interactive)
+// Initialize target container (Non-interactive)
 let targetContainer = new FornaContainer("#target-rna-container", {
     'animation': true,
     'zoomable': false,
-    'allowPanning': false, // Attempt to disable panning via options
-    'applyForce': true     // Re-enable force to avoid breaking main container's physics if shared
+    'allowPanning': false,
+    'applyForce': true
 });
 
 // Level Definitions
 const LEVELS = [
     {
         name: "The Hairpin",
-        target: "((((((((.........))))))))",
-        startSeq: "GGGGGGGGAAAAAAAAACCCCCCCC" // 25 nts
+        target: "((((((.......))))))",
+        startSeq: "GGGGGGAAAAAAACCCCCC"
     },
     {
         name: "Internal Loop",
         target: "((((((....((....))....))))))",
-        startSeq: "GGGGGGAAAAGGAAAACCAAAACCCCCC" // 28 nts
+        startSeq: "GGGGGGAAAAGGAAAACCAAAACCCCCC"
     },
     {
         name: "The Bulge",
         target: "((((((.((....)).))))))",
-        startSeq: "GGGGGGUAAUUUUUAGCCCCCC" // 22 nts
+        startSeq: "GGGGGGUAAUUUUUAGCCCCCC"
     },
     {
         name: "Twin Towers",
         target: "((((....)))).((((....))))",
-        startSeq: "GGGGAAAACCCCAGGGGAAAACCCC" // 25 nts
+        startSeq: "GGGGAAAACCCCAGGGGAAAACCCC"
     },
     {
         name: "The Cross",
         target: "((((..((...))..((...))..))))",
-        startSeq: "GGGGAAGGAAACCAAGGAAACCAACCCC" // 28 nts
+        startSeq: "GGGGAAGGAAACCAAGGAAACCAACCCC"
     },
     {
         name: "Long Distance",
         target: "((((((((((....))))))))))",
-        startSeq: "GGGGGGGGGGAAAACCCCCCCCCC" // 24 nts
+        startSeq: "GGGGGGGGGGAAAACCCCCCCCCC"
     }
 ];
 
@@ -59,7 +57,7 @@ let targetStructure = "";
 let selectedNodeIndex = -1;
 
 /**
- * Called by HTML buttons: startLevel(0), startLevel(1), etc.
+ * Start Level
  */
 function startLevel(lvlIndex) {
     const lvl = LEVELS[lvlIndex];
@@ -77,27 +75,22 @@ function startLevel(lvlIndex) {
     const gameView = document.getElementById('game-view');
     gameView.style.display = 'flex';
 
-    // 4. CRITICAL FIX: Give the browser 50ms to render the div, 
-    //    then trigger a resize so Forna knows how big the window is.
+    // 4. FIX: Allow render time, then resize for Forna.
     setTimeout(() => {
-        // 1. Tell Forna/Browser "The window size changed, check dimensions!"
         window.dispatchEvent(new Event('resize'));
-
-        // 2. Now that dimensions are correct, draw the RNA
         initGame();
     }, 50);
 
-    // 5. Initialize Target Container
+    // 5. Init Target Container
     setTimeout(() => {
         targetContainer.clearNodes();
         targetContainer.addRNA(targetStructure, {
-            sequence: " ".repeat(targetStructure.length), // Empty sequence to hide letters (mostly)
+            sequence: " ".repeat(targetStructure.length), // Hide letters
             structure: targetStructure
         });
 
-        // Force color update immediately after adding
         setTimeout(() => {
-            updateTargetHighlighting(lvl.startSeq); // Check initial state
+            updateTargetHighlighting(lvl.startSeq);
             targetContainer.center_view();
         }, 100);
     }, 100);
@@ -111,13 +104,12 @@ function showMenu() {
     document.getElementById('level-menu').style.display = 'flex';
 
     // Optional: Clear container to save memory?
-    // Optional: Clear container to save memory?
     container.clearNodes();
     targetContainer.clearNodes();
 }
 
 /**
- * Initializes the Forna Container with current data
+ * Init Forna Container
  */
 function initGame() {
     container.clearNodes();
@@ -214,7 +206,7 @@ function mutateNode(newBase) {
     document.getElementById('mutation-menu').style.display = 'none';
     if (selectedNodeIndex === -1) return;
 
-    // 1. Capture Camera State
+    // 1. Capture Camera
     let prevTranslate = [0, 0], prevScale = 1;
     if (container.zoomer) {
         prevTranslate = container.zoomer.translate();
@@ -240,19 +232,18 @@ function mutateNode(newBase) {
             // Update Target Highlights based on new structure
             updateTargetHighlighting(data.structure);
 
-            // 2. Smooth morph to the new structure
+            // 2. Morph to new structure
             if (typeof container.transitionRNA === 'function') {
                 container.transitionRNA(data.structure, {
                     sequence: data.sequence,
-                    duration: 900 // Duration in ms
+                    duration: 900
                 });
             } else {
-                // Fallback if something is wrong with fornac.js update
                 container.clearNodes();
                 container.addRNA(data.structure, { sequence: data.sequence });
             }
 
-            // 3. Restore User Zoom/Pan immediately
+            // 3. Restore Zoom/Pan
             if (container.zoomer) {
                 container.zoomer.translate(prevTranslate);
                 container.zoomer.scale(prevScale);
@@ -265,15 +256,12 @@ function mutateNode(newBase) {
 }
 
 /**
- * Updates the target structure visualization.
- * Highlights nodes in Green if they match the desired pairing state in the current structure.
+ * Updates target structure highlights.
  */
 function updateTargetHighlighting(currentStructureString) {
     if (!targetStructure || !currentStructureString) return;
 
-    // We can't easily access the internal Pair Table of Fornac without parsing dot-bracket ourselves
-    // But Fornac likely has a helper, or we write a simple parser. 
-    // Let's write a simple dot-bracket parser to get pair map: [index -> pairIndex or -1]
+    // Simple dot-bracket parser to get pair map: [index -> pairIndex or -1]
 
     function getPairMap(structure) {
         let stack = [];
@@ -304,10 +292,8 @@ function updateTargetHighlighting(currentStructureString) {
     }
 
     // Apply styles to targetContainer nodes
-    // Access D3 selection of target container nodes
     d3.select("#target-rna-container").selectAll('.node')
         .classed('correct', function (d) {
-            // d.num is 1-based index usually
             return correctIndices.has(d.num - 1);
         });
 }
@@ -343,7 +329,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 'C': '#32CD32', 'c': '#32CD32',
                 'T': '#1E90FF', 't': '#1E90FF'
             };
-            // Only apply to MAIN container, not target container
+            // Only apply to MAIN container
             d3.select("#rna_container").selectAll('.node[node_type="nucleotide"]')
                 .style('fill', function (d) { return colorMap[d.name] || 'white'; });
         }
@@ -362,8 +348,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // NOTE: initGame() is NOT called here anymore. 
-    // The user must click a level button to trigger initGame().
+    // Init is triggered by level buttons.
 
     attachMenuHoverListeners();
 });

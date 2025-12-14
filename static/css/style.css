@@ -1,10 +1,7 @@
-/* --- 1. Global Themes & Configuration --- */
-
+/* Global Themes */
 :root {
     --bg-app: #121212;
-    /* Dark Background */
     --bg-panel: #1e1e2e;
-    /* Panel Background */
     --text-primary: #ffffff;
     --text-secondary: #a0a0b0;
 
@@ -64,28 +61,22 @@ body {
     text-align: right;
 }
 
-/* --- 3. Main Stage Layout --- */
-
-/* The outer container holds the distinct "screens" (Menu or Game) */
+/* Outer container */
 .main-stage {
     flex: 1;
     position: relative;
     width: 100%;
     height: 100%;
     overflow: hidden;
-    /* Removed: display: flex; gap: 1rem; padding: 1rem; */
-    /* This allows the children (Menu or GameView) to take full size */
 }
 
-/* New Class: Handles the layout ONLY when the game is active */
+/* Game Active Layout */
 .game-mode-layout {
     display: flex;
-    /* This creates the Side-by-Side layout */
     width: 100%;
     height: 100%;
     gap: 1rem;
     padding: 1rem;
-    /* Padding goes here now */
 }
 
 /* Left Sidebar: Controls */
@@ -151,19 +142,12 @@ body {
 }
 
 
-/* --- 4. Popup Mutation Menu (Redesigned) --- */
-
-/**
- * Popup Mutation Menu
- * Updated with transparency and glassmorphism effect.
- */
+/* Popup Mutation Menu */
 .mutation-menu {
     position: absolute;
 
     /* Transparent version of #1e1e2e (approx 80% opacity) */
     background: rgba(30, 30, 46, 0.8);
-
-    /* Frosted glass effect for better readability */
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
 
@@ -208,23 +192,7 @@ body {
     filter: drop-shadow(0 0 5px currentColor);
 }
 
-/* Specific Line Colors matching pairs */
-/* A-U: Yellow - Blue Mix? Let's use white/theme or gradient if possible. 
-   Simple approach: Use a neutral or mixed color, or the color of the pair being formed.
-   Actually, request says "corresponding possible basepairs should also glow".
-   Let's create specific classes for the active state colors.
-*/
-
-#line-AU.glow {
-    stroke: #00FF00;
-    filter: drop-shadow(0 0 8px #00FF00);
-}
-
-/* Solved/Strong pair color? Or mix of A/U? Request says "highlighted". Let's stick to a bright "pair" color or just white glow. */
-/* Wait, "circle begins to glow in its color. Now the corresponding possible basepairs should also glow."
-   If I hover A (Yellow), A-U should glow.
-   Let's use a standard bright connection color like white or a "bond" color.
-*/
+/* Specific Line Colors */
 #line-AU.glow {
     stroke: #ffffff;
     filter: drop-shadow(0 0 5px #ffffff);
@@ -363,7 +331,7 @@ body {
     box-shadow: 0 0 15px var(--accent-green);
 }
 
-/* --- 5. Footer --- */
+/* Footer */
 .app-footer {
     padding: 0.8rem;
     text-align: center;
@@ -379,9 +347,9 @@ body {
 }
 
 
-/* --- 6. FORNA VISUALIZATION OVERRIDES (Your Tweaks) --- */
+/* FORNA OVERRIDES */
 
-/* Base style for Nucleotides (White) */
+/* Nucleotides (White) */
 .node {
     fill: white;
     stroke: #ccc;
@@ -441,7 +409,7 @@ circle[node_type="pseudo"] {
     pointer-events: none;
 }
 
-/* --- 7. Settings Widget --- */
+/* Settings Widget */
 
 .settings-widget {
     position: absolute;
@@ -582,7 +550,6 @@ circle[node_type="pseudo"] {
     color: var(--text-primary);
     text-transform: uppercase;
     letter-spacing: 4px;
-    background: linear-gradient(90deg, var(--accent-blue), var(--accent-green));
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -663,7 +630,7 @@ circle[node_type="pseudo"] {
     display: flex !important;
 }
 
-/* --- Target Visualization Container --- */
+/* Target Visualization */
 
 .target-view-container {
     margin-top: 2rem;
@@ -708,7 +675,7 @@ circle[node_type="pseudo"] {
     /* Capture events */
 }
 
-/* --- Target Visualization Specific Overrides --- */
+/* Target Visualization Overrides */
 
 /* Scope these overrides to the target container */
 #target-rna-container .node {
@@ -733,7 +700,7 @@ circle[node_type="pseudo"] {
     display: none;
 }
 
-/* --- Positioning Labels (10, 20...) --- */
+/* Positioning Labels */
 
 /* 1. Show the text for positioning labels */
 #target-rna-container .node-label[label_type="label"] {
