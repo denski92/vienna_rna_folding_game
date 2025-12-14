@@ -6,6 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RNA Builders | Lange Nacht der Forschung</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+
     <link rel="stylesheet" href="{{ url_for('static', filename='css/fornac.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
@@ -64,16 +70,18 @@
                     <p>System: <span style="color: #32CD32;">Online</span></p>
                 </div>
 
-                <div class="status-group">
-                    <h3>Target Distance</h3>
-                    <div class="metric-display">
+                <!-- Distance Metric Card -->
+                <div class="metric-card">
+                    <span class="metric-label">Target Distance</span>
+                    <div class="metric-value distance">
                         <span id="dist-val">--</span>
                     </div>
                 </div>
 
-                <div class="status-group">
-                    <h3>Stability Energy (ΔG)</h3>
-                    <div class="metric-display">
+                <!-- Energy Metric Card -->
+                <div class="metric-card">
+                    <span class="metric-label">Stability Energy (ΔG)</span>
+                    <div class="metric-value energy">
                         <span id="mfe-val">--</span>
                         <span class="metric-unit">kcal/mol</span>
                     </div>

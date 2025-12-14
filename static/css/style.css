@@ -1,19 +1,38 @@
 /* Global Themes */
 :root {
-    --bg-app: #121212;
-    --bg-panel: #1e1e2e;
-    --text-primary: #ffffff;
-    --text-secondary: #a0a0b0;
+    /* Backgrounds */
+    --bg-app-main: #0a0e17;
+    /* Deeper, slightly bluish black */
+    --bg-sidebar: #151b2b;
+    /* Lighter than main bg, but still deep */
+    --bg-canvas: #1a202c;
+    /* Dark canvas instead of white, for glowing effect */
+    --bg-card: rgba(30, 41, 59, 0.7);
+    /* Glassmorphism base */
 
-    /* Nucleotide Colors */
-    --accent-blue: #1E90FF;
-    /* U */
-    --accent-yellow: #FFD700;
-    /* A */
-    --accent-red: #FF4500;
-    /* G */
-    --accent-green: #32CD32;
-    /* C */
+    /* Text */
+    --text-primary: #e2e8f0;
+    --text-secondary: #94a3b8;
+    --text-accent: #38bdf8;
+    /* Cyan for highlights */
+
+    /* Metrics Colors (Neon palette) */
+    --energy-good: #4ade80;
+    /* Neon Green */
+    --energy-bad: #f87171;
+    /* Neon Red */
+    --target-distance: #facc15;
+    /* Neon Yellow */
+
+    /* Borders & Shadows */
+    --border-subtle: rgba(255, 255, 255, 0.1);
+    --glow-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+
+    /* Nucleotide Colors (Mapped to Theme) */
+    --accent-blue: var(--text-accent);
+    --accent-yellow: var(--target-distance);
+    --accent-red: var(--energy-bad);
+    --accent-green: var(--energy-good);
 }
 
 * {
@@ -23,8 +42,8 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--bg-app);
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-app-main);
     color: var(--text-primary);
     height: 100vh;
     display: flex;
@@ -36,11 +55,11 @@ body {
 /* --- 2. Header Layout --- */
 .app-header {
     padding: 1rem 2rem;
-    background: var(--bg-panel);
+    background: var(--bg-sidebar);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 2px solid #333;
+    border-bottom: 1px solid var(--border-subtle);
     flex: 0 0 auto;
     /* Don't shrink */
 }
@@ -82,7 +101,7 @@ body {
 /* Left Sidebar: Controls */
 .control-panel {
     flex: 0 0 300px;
-    background: var(--bg-panel);
+    background: var(--bg-sidebar);
     border-radius: 12px;
     padding: 1.5rem;
     display: flex;
@@ -91,32 +110,55 @@ body {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
-.status-group h3 {
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    color: var(--text-secondary);
-    margin-bottom: 0.5rem;
+/* Metric Cards (New) */
+.metric-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    /* Optional: subtle glass effect */
+    backdrop-filter: blur(10px);
 }
 
-.metric-display {
-    font-size: 2rem;
-    font-weight: bold;
+.metric-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.metric-value {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 2.5rem;
+    /* Make it huge */
+    font-weight: 700;
+    line-height: 1;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+}
+
+/* Specific colors based on your current data */
+.metric-value.energy {
+    color: var(--energy-good);
+    text-shadow: 0 0 10px rgba(74, 222, 128, 0.4);
+}
+
+.metric-value.distance {
+    color: var(--target-distance);
 }
 
 .metric-unit {
     font-size: 1rem;
     color: var(--text-secondary);
+    font-family: 'Inter', sans-serif;
+    font-weight: normal;
 }
 
-/* Color coding for metrics */
-#dist-val {
-    color: var(--accent-red);
-}
-
-#mfe-val {
-    color: var(--accent-blue);
-}
-
+/* Instruction Text */
 .instruction-text {
     font-style: italic;
     color: var(--accent-yellow);
@@ -128,11 +170,11 @@ body {
 /* Right Panel: Visualization */
 .viz-panel {
     flex: 1;
-    background: #f9f9f9;
+    background: var(--bg-canvas);
     border-radius: 12px;
     overflow: hidden;
     position: relative;
-    border: 1px solid #ccc;
+    border: 1px solid var(--border-subtle);
 }
 
 #rna_container {
@@ -147,7 +189,7 @@ body {
     position: absolute;
 
     /* Transparent version of #1e1e2e (approx 80% opacity) */
-    background: rgba(30, 30, 46, 0.8);
+    background: var(--bg-card);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
 
@@ -224,7 +266,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid var(--border-subtle);
     padding-bottom: 5px;
     margin-bottom: 2px;
 }
@@ -337,7 +379,7 @@ body {
     text-align: center;
     font-size: 0.8rem;
     color: var(--text-secondary);
-    background: var(--bg-panel);
+    background: var(--bg-sidebar);
     flex: 0 0 auto;
 }
 
@@ -428,7 +470,7 @@ circle[node_type="pseudo"] {
     height: 45px;
     border-radius: 50%;
     border: 1px solid rgba(255, 255, 255, 0.2);
-    background: rgba(30, 30, 46, 0.85);
+    background: var(--bg-card);
     /* Matches mutation menu */
     color: var(--text-secondary);
     font-size: 1.5rem;
@@ -443,7 +485,7 @@ circle[node_type="pseudo"] {
 
 .settings-btn:hover {
     color: white;
-    background: var(--bg-panel);
+    background: var(--bg-sidebar);
     transform: rotate(30deg);
 }
 
@@ -455,9 +497,9 @@ circle[node_type="pseudo"] {
     right: 0;
     width: 220px;
 
-    background: rgba(30, 30, 46, 0.85);
+    background: var(--bg-card);
     backdrop-filter: blur(6px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-subtle);
     border-radius: 12px;
     padding: 15px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
@@ -482,7 +524,7 @@ circle[node_type="pseudo"] {
     font-size: 0.9rem;
     font-weight: bold;
     color: var(--text-primary);
-    border-bottom: 1px solid #444;
+    border-bottom: 1px solid var(--border-subtle);
     padding-bottom: 8px;
 }
 
@@ -541,7 +583,7 @@ circle[node_type="pseudo"] {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: var(--bg-app);
+    background: var(--bg-app-main);
 }
 
 .level-menu h2 {
@@ -563,8 +605,8 @@ circle[node_type="pseudo"] {
 }
 
 .level-card {
-    background: rgba(30, 30, 46, 0.6);
-    border: 2px solid #333;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
     border-radius: 16px;
     width: 200px;
     height: 160px;
@@ -580,7 +622,8 @@ circle[node_type="pseudo"] {
 .level-card:hover {
     transform: translateY(-5px);
     border-color: var(--accent-blue);
-    background: rgba(30, 30, 46, 0.9);
+    background: var(--bg-card);
+    border-color: var(--text-accent);
     box-shadow: 0 0 20px rgba(30, 144, 255, 0.3);
 }
 
