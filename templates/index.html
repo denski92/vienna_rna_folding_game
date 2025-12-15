@@ -206,7 +206,10 @@
         <div class="celebration-popup">
             <h2>🎉 Level Complete!</h2>
             <p>You have successfully engineered the RNA sequence to match the target structure.</p>
-            <button class="back-btn" onclick="showMenu()">← Back to Missions</button>
+            <div style="display: flex; flex-direction: column; gap: 10px; align-items: center;">
+                <button class="back-btn" onclick="showMenu()">← Back to Missions</button>
+                <button class="tinker-btn" onclick="keepTinkering()">Keep tinkering →</button>
+            </div>
         </div>
     </div>
 

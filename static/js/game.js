@@ -60,6 +60,7 @@ let targetStructure = "";
 let selectedNodeIndex = -1;
 let mutationHistory = []; // Stack for undo functionality
 let currentDifficulty = "EASY";
+let isLevelSolvedAndContinued = false; // Flag to suppress popup if user wants to keep tinkering
 
 function setDifficulty(diff) {
     currentDifficulty = diff;
@@ -161,6 +162,7 @@ function startLevel(lvlIndex) {
 
     // 6. Reset History
     mutationHistory = [];
+    isLevelSolvedAndContinued = false; // Reset flag on new level
     updateUndoUI();
 }
 
@@ -225,8 +227,10 @@ function updateMetrics(data) {
         distEl.style.textShadow = '0 0 10px rgba(50, 205, 50, 0.4)';
         distEl.innerText = "SOLVED!";
 
-        // Show Celebration Popup
-        document.getElementById('celebration-overlay').style.display = 'flex';
+        // Show Celebration Popup ONLY if not tinkered
+        if (!isLevelSolvedAndContinued) {
+            document.getElementById('celebration-overlay').style.display = 'flex';
+        }
     } else {
         distEl.style.color = '#FF4500'; // Red
         distEl.style.textShadow = '0 0 10px rgba(255, 69, 0, 0.4)';
@@ -509,4 +513,11 @@ function attachMenuHoverListeners() {
             }
         });
     });
+}
+/**
+ * Handle "Keep Tinkering" Action
+ */
+function keepTinkering() {
+    isLevelSolvedAndContinued = true;
+    document.getElementById('celebration-overlay').style.display = 'none';
 }
