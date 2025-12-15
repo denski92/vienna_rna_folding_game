@@ -7,7 +7,10 @@ app = Flask(__name__)
 
 def calculate_metrics(sequence, target_structure):
     """Computes MFE structure and compares to target."""
-    current_structure, mfe = RNA.fold(sequence)
+    md_no_dangles = RNA.md()
+    md_no_dangles.dangles = 0
+    fc = RNA.fold_compound(sequence, md_no_dangles)
+    current_structure, mfe = fc.mfe()
     distance = RNA.bp_distance(current_structure, target_structure)
 
     return {

@@ -65,6 +65,11 @@
 
         <section id="level-menu" class="level-menu">
             <h2>Select Mission</h2>
+            <div class="difficulty-selector">
+                <button class="diff-btn active" onclick="setDifficulty('EASY')">Easy</button>
+                <button class="diff-btn" onclick="setDifficulty('NORMAL')">Normal</button>
+                <button class="diff-btn" onclick="setDifficulty('EXTREME')">Extreme</button>
+            </div>
             <div class="level-grid">
                 <button class="level-card" onclick="startLevel(0)">
                     <span class="lvl-num">01</span>

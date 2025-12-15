@@ -61,6 +61,20 @@ let selectedNodeIndex = -1;
 let mutationHistory = []; // Stack for undo functionality
 let currentDifficulty = "EASY";
 
+function setDifficulty(diff) {
+    currentDifficulty = diff;
+
+    // Update UI
+    const buttons = document.querySelectorAll('.diff-btn');
+    buttons.forEach(btn => {
+        if (btn.innerText.toUpperCase() === diff) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+}
+
 /**
  * Helper to mutate a sequence n times randomly.
  */
@@ -106,13 +120,13 @@ function startLevel(lvlIndex) {
     if (!lvl) return;
 
     // 1. Set State
+    // 1. Set State
     // Apply difficulty logic
-    if (currentDifficulty === "EASY") {
-        // Mutate startSeq 3 times
-        currentSequence = mutateSequence(lvl.startSeq, 3);
-    } else {
-        currentSequence = lvl.startSeq;
-    }
+    let mutationCount = 3;
+    if (currentDifficulty === 'NORMAL') mutationCount = 5;
+    if (currentDifficulty === 'EXTREME') mutationCount = 10;
+
+    currentSequence = mutateSequence(lvl.startSeq, mutationCount);
 
     targetStructure = lvl.target;
 
