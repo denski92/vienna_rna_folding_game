@@ -58,6 +58,8 @@ const LEVELS = [
 let currentSequence = "";
 let targetStructure = "";
 let selectedNodeIndex = -1;
+let mutationHistory = []; // Stack for undo functionality
+
 
 /**
  * Start Level
@@ -98,6 +100,10 @@ function startLevel(lvlIndex) {
             targetContainer.center_view();
         }, 100);
     }, 100);
+
+    // 6. Reset History
+    mutationHistory = [];
+    updateUndoUI();
 }
 
 /**
@@ -217,7 +223,8 @@ function attachClickListeners() {
     });
 }
 
-function mutateNode(newBase) {
+function mutateNode(newBase, recordHistory = true) {
+
     document.getElementById('mutation-menu').style.display = 'none';
     if (selectedNodeIndex === -1) return;
 
@@ -229,8 +236,22 @@ function mutateNode(newBase) {
     }
 
     let seqArray = currentSequence.split('');
+    let oldBase = seqArray[selectedNodeIndex];
+
+    // Safety check: don't mutate if same base
+    if (oldBase === newBase) return;
+
+    if (recordHistory) {
+        mutationHistory.push({
+            index: selectedNodeIndex,
+            oldBase: oldBase
+        });
+        updateUndoUI();
+    }
+
     seqArray[selectedNodeIndex] = newBase;
     let nextSequence = seqArray.join('');
+
 
     fetch('/api/mutate', {
         method: 'POST',
@@ -370,6 +391,39 @@ document.addEventListener("DOMContentLoaded", function () {
 
     attachMenuHoverListeners();
 });
+
+
+function undoLastMutation() {
+    if (mutationHistory.length === 0) return;
+
+    const lastStep = mutationHistory.pop();
+
+    // Select the node we are undoing (visual feedback)
+    selectedNodeIndex = lastStep.index;
+
+    // Apply mutation back to old base, but DO NOT record it in history again
+    mutateNode(lastStep.oldBase, false);
+
+    // We already popped, but mutateNode calls updateUndoUI? 
+    // Wait, mutateNode calls updateUndoUI only if recordHistory is true? No.
+    // We need to ensure UI is updated. 
+    // Actually, I put updateUndoUI inside the `if (recordHistory)` block in mutateNode.
+    // So if recordHistory is false, it won't be called essentially?
+    // Let's add explicit updateUndoUI here just in case.
+    updateUndoUI();
+}
+
+function updateUndoUI() {
+    const btn = document.getElementById('undo-btn');
+    const countSpan = document.getElementById('undo-count');
+
+    if (mutationHistory.length > 0) {
+        btn.style.display = 'flex';
+        countSpan.innerText = mutationHistory.length;
+    } else {
+        btn.style.display = 'none';
+    }
+}
 
 function attachMenuHoverListeners() {
     const pairs = {

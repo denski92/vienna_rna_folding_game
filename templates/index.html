@@ -135,6 +135,12 @@
             <section class="viz-panel">
                 <div id="rna_container"></div>
 
+                <!-- Undo Button -->
+                <button id="undo-btn" class="undo-btn" style="display: none;" onclick="undoLastMutation()">
+                    <div class="undo-icon">↺</div>
+                    <span id="undo-count" class="undo-count">0</span>
+                </button>
+
                 <div class="settings-widget">
                     <button id="settings-btn" class="settings-btn" title="Settings">⚙️</button>
                     <div id="settings-panel" class="settings-panel hidden">

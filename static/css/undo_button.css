@@ -1,0 +1,62 @@
+/* Undo Button Container */
+.undo-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 50px;
+    height: 50px;
+    padding: 0;
+    
+    background: var(--bg-card);
+    backdrop-filter: blur(4px);
+    border: 1px solid var(--border-subtle);
+    border-radius: 50%;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    cursor: pointer;
+    z-index: 100;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.undo-btn:hover {
+    background: var(--bg-sidebar);
+    border-color: var(--accent-blue);
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+}
+
+/* The Arrow Icon (using text for now, but styled) */
+.undo-btn .undo-icon {
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    transform: rotate(-45deg); /* Adjust rotation if needed for ↺ */
+    transition: color 0.3s;
+}
+
+.undo-btn:hover .undo-icon {
+    color: var(--accent-blue);
+}
+
+/* The Counter Badge */
+.undo-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: var(--accent-blue);
+    color: #000;
+    font-size: 0.7rem;
+    font-weight: bold;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    padding: 0 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.2);
+}
