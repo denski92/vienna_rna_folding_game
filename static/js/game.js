@@ -61,6 +61,8 @@ let selectedNodeIndex = -1;
 let mutationHistory = []; // Stack for undo functionality
 let currentDifficulty = "EASY";
 let isLevelSolvedAndContinued = false; // Flag to suppress popup if user wants to keep tinkering
+let currentLevelIndex = -1; // Track which level we are playing
+let levelProgress = {}; // { levelIndex: { 'EASY': bool, 'NORMAL': bool, 'EXTREME': bool } }
 
 function setDifficulty(diff) {
     currentDifficulty = diff;
@@ -120,6 +122,8 @@ function startLevel(lvlIndex) {
     const lvl = LEVELS[lvlIndex];
     if (!lvl) return;
 
+    currentLevelIndex = lvlIndex; // Store current level index
+
     // 1. Set State
     // 1. Set State
     // Apply difficulty logic
@@ -173,6 +177,8 @@ function showMenu() {
     document.getElementById('game-view').style.display = 'none';
     document.getElementById('celebration-overlay').style.display = 'none'; // Hide popup if open
     document.getElementById('level-menu').style.display = 'flex';
+
+    renderLevelMenu(); // Update pips
 
     // Optional: Clear container to save memory?
     container.clearNodes();
@@ -229,6 +235,12 @@ function updateMetrics(data) {
 
         // Show Celebration Popup ONLY if not tinkered
         if (!isLevelSolvedAndContinued) {
+            // Mark Level as Completed for this difficulty
+            if (currentLevelIndex !== -1) {
+                if (!levelProgress[currentLevelIndex]) levelProgress[currentLevelIndex] = {};
+                levelProgress[currentLevelIndex][currentDifficulty] = true;
+            }
+
             document.getElementById('celebration-overlay').style.display = 'flex';
         }
     } else {
@@ -520,4 +532,26 @@ function attachMenuHoverListeners() {
 function keepTinkering() {
     isLevelSolvedAndContinued = true;
     document.getElementById('celebration-overlay').style.display = 'none';
+}
+
+function renderLevelMenu() {
+    // Loop through all level cards
+    const cards = document.querySelectorAll('.level-card');
+    cards.forEach(card => {
+        const lvlIdx = parseInt(card.getAttribute('data-level'));
+        if (isNaN(lvlIdx)) return;
+
+        const progress = levelProgress[lvlIdx];
+        if (!progress) return; // No progress for this level yet
+
+        // Update Pips
+        if (progress['EASY']) card.querySelector('.pip.easy').classList.add('done');
+        if (progress['NORMAL']) card.querySelector('.pip.normal').classList.add('done');
+        if (progress['EXTREME']) card.querySelector('.pip.extreme').classList.add('done');
+
+        // Check for Full Completion
+        if (progress['EASY'] && progress['NORMAL'] && progress['EXTREME']) {
+            card.classList.add('fully-solved');
+        }
+    });
 }

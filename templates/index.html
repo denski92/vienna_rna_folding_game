@@ -66,34 +66,64 @@
         <section id="level-menu" class="level-menu">
             <h2>Select Mission</h2>
             <div class="difficulty-selector">
-                <button class="diff-btn active" onclick="setDifficulty('EASY')">Easy</button>
-                <button class="diff-btn" onclick="setDifficulty('NORMAL')">Normal</button>
-                <button class="diff-btn" onclick="setDifficulty('EXTREME')">Extreme</button>
+                <button class="diff-btn btn-easy active" onclick="setDifficulty('EASY')">Easy</button>
+                <button class="diff-btn btn-normal" onclick="setDifficulty('NORMAL')">Normal</button>
+                <button class="diff-btn btn-extreme" onclick="setDifficulty('EXTREME')">Extreme</button>
             </div>
             <div class="level-grid">
-                <button class="level-card" onclick="startLevel(0)">
+                <button class="level-card" onclick="startLevel(0)" data-level="0">
                     <span class="lvl-num">01</span>
                     <span class="lvl-name">The Hairpin</span>
+                    <div class="difficulty-pips">
+                        <div class="pip easy" title="Easy"></div>
+                        <div class="pip normal" title="Normal"></div>
+                        <div class="pip extreme" title="Extreme"></div>
+                    </div>
                 </button>
-                <button class="level-card" onclick="startLevel(1)">
+                <button class="level-card" onclick="startLevel(1)" data-level="1">
                     <span class="lvl-num">02</span>
                     <span class="lvl-name">Internal Loop</span>
+                    <div class="difficulty-pips">
+                        <div class="pip easy" title="Easy"></div>
+                        <div class="pip normal" title="Normal"></div>
+                        <div class="pip extreme" title="Extreme"></div>
+                    </div>
                 </button>
-                <button class="level-card" onclick="startLevel(2)">
+                <button class="level-card" onclick="startLevel(2)" data-level="2">
                     <span class="lvl-num">03</span>
                     <span class="lvl-name">The Bulge</span>
+                    <div class="difficulty-pips">
+                        <div class="pip easy" title="Easy"></div>
+                        <div class="pip normal" title="Normal"></div>
+                        <div class="pip extreme" title="Extreme"></div>
+                    </div>
                 </button>
-                <button class="level-card" onclick="startLevel(3)">
+                <button class="level-card" onclick="startLevel(3)" data-level="3">
                     <span class="lvl-num">04</span>
                     <span class="lvl-name">Twin Towers</span>
+                    <div class="difficulty-pips">
+                        <div class="pip easy" title="Easy"></div>
+                        <div class="pip normal" title="Normal"></div>
+                        <div class="pip extreme" title="Extreme"></div>
+                    </div>
                 </button>
-                <button class="level-card" onclick="startLevel(4)">
+                <button class="level-card" onclick="startLevel(4)" data-level="4">
                     <span class="lvl-num">05</span>
                     <span class="lvl-name">The Cross</span>
+                    <div class="difficulty-pips">
+                        <div class="pip easy" title="Easy"></div>
+                        <div class="pip normal" title="Normal"></div>
+                        <div class="pip extreme" title="Extreme"></div>
+                    </div>
                 </button>
-                <button class="level-card" onclick="startLevel(5)">
+                <button class="level-card" onclick="startLevel(5)" data-level="5">
                     <span class="lvl-num">06</span>
                     <span class="lvl-name">Long Distance</span>
+                    <div class="difficulty-pips">
+                        <div class="pip easy" title="Easy"></div>
+                        <div class="pip normal" title="Normal"></div>
+                        <div class="pip extreme" title="Extreme"></div>
+                    </div>
                 </button>
             </div>
         </section>
@@ -172,7 +202,7 @@
     </main>
 
     <footer class="app-footer">
-        A RNA folding game inspired by <a href="https://eternagame.org" target="_blank">Eterna</a>.
+        A RNA folding game - hosted by <a href="https://www.tbi.univie.ac.at/" target="_blank">TBI</a>.
         Powered by <a href="https://www.tbi.univie.ac.at/RNA/" target="_blank">ViennaRNA</a> and <a
             href="http://www.viennarna.at/forna/" target="_blank">Forna</a>.
     </footer>
