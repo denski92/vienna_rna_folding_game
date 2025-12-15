@@ -169,6 +169,7 @@ function startLevel(lvlIndex) {
  */
 function showMenu() {
     document.getElementById('game-view').style.display = 'none';
+    document.getElementById('celebration-overlay').style.display = 'none'; // Hide popup if open
     document.getElementById('level-menu').style.display = 'flex';
 
     // Optional: Clear container to save memory?
@@ -223,6 +224,9 @@ function updateMetrics(data) {
         distEl.style.color = '#32CD32'; // Green
         distEl.style.textShadow = '0 0 10px rgba(50, 205, 50, 0.4)';
         distEl.innerText = "SOLVED!";
+
+        // Show Celebration Popup
+        document.getElementById('celebration-overlay').style.display = 'flex';
     } else {
         distEl.style.color = '#FF4500'; // Red
         distEl.style.textShadow = '0 0 10px rgba(255, 69, 0, 0.4)';

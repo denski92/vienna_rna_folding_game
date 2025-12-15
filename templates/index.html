@@ -201,6 +201,15 @@
         </div>
     </div>
 
+    <!-- Celebration Popup -->
+    <div id="celebration-overlay" class="celebration-overlay" style="display: none;">
+        <div class="celebration-popup">
+            <h2>🎉 Level Complete!</h2>
+            <p>You have successfully engineered the RNA sequence to match the target structure.</p>
+            <button class="back-btn" onclick="showMenu()">← Back to Missions</button>
+        </div>
+    </div>
+
     <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
     <script src="{{ url_for('static', filename='js/d3.js') }}"></script>
     <script src="{{ url_for('static', filename='js/fornac.js') }}"></script>
