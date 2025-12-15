@@ -25,7 +25,7 @@ const LEVELS = [
     {
         name: "The Hairpin",
         target: "((((((.......))))))",
-        startSeq: "GGGGGGAAAAAAACCCCCC"
+        startSeq: "GAUGGGAAUUAAACCCAUC"
     },
     {
         name: "Internal Loop",
@@ -44,8 +44,8 @@ const LEVELS = [
     },
     {
         name: "The Cross",
-        target: "((((..((...))..((...))..))))",
-        startSeq: "GGGGAAGGAAACCAAGGAAACCAACCCC"
+        target: "((((..(((...)))..(((...)))..))))",
+        startSeq: "GGGGAAGCGAAACGCAAGCGAAACGCAACCCC"
     },
     {
         name: "Long Distance",
@@ -59,7 +59,44 @@ let currentSequence = "";
 let targetStructure = "";
 let selectedNodeIndex = -1;
 let mutationHistory = []; // Stack for undo functionality
+let currentDifficulty = "EASY";
 
+/**
+ * Helper to mutate a sequence n times randomly.
+ */
+function mutateSequence(sequence, numMutations) {
+    let seqArray = sequence.split('');
+    let indices = [];
+
+    // Create an array of all possible indices
+    for (let i = 0; i < seqArray.length; i++) {
+        indices.push(i);
+    }
+
+    // Shuffle indices to pick random ones
+    for (let i = indices.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+
+    // Pick the first n indices
+    let distinctIndices = indices.slice(0, numMutations);
+
+    const bases = ['A', 'U', 'G', 'C'];
+
+    distinctIndices.forEach(idx => {
+        let oldBase = seqArray[idx];
+        let newBase = oldBase;
+
+        // Pick a new base different from the old one
+        while (newBase === oldBase) {
+            newBase = bases[Math.floor(Math.random() * bases.length)];
+        }
+        seqArray[idx] = newBase;
+    });
+
+    return seqArray.join('');
+}
 
 /**
  * Start Level
@@ -69,7 +106,14 @@ function startLevel(lvlIndex) {
     if (!lvl) return;
 
     // 1. Set State
-    currentSequence = lvl.startSeq;
+    // Apply difficulty logic
+    if (currentDifficulty === "EASY") {
+        // Mutate startSeq 3 times
+        currentSequence = mutateSequence(lvl.startSeq, 3);
+    } else {
+        currentSequence = lvl.startSeq;
+    }
+
     targetStructure = lvl.target;
 
     // 2. Update UI Titles
@@ -80,13 +124,7 @@ function startLevel(lvlIndex) {
     const gameView = document.getElementById('game-view');
     gameView.style.display = 'flex';
 
-    // 4. FIX: Allow render time, then resize for Forna.
-    setTimeout(() => {
-        window.dispatchEvent(new Event('resize'));
-        initGame();
-    }, 50);
-
-    // 5. Init Target Container
+    // 4. Init Target Container FIRST
     setTimeout(() => {
         targetContainer.clearNodes();
         targetContainer.addRNA(targetStructure, {
@@ -95,11 +133,17 @@ function startLevel(lvlIndex) {
             'labelInterval': 5
         });
 
+        // Center view for target
+        targetContainer.center_view();
+
+        // 5. THEN Init Game (Main Container)
+        // This ensures mismatch highlighting works because targetContainer is ready.
         setTimeout(() => {
-            updateTargetHighlighting(lvl.target);
-            targetContainer.center_view();
-        }, 100);
-    }, 100);
+            window.dispatchEvent(new Event('resize'));
+            initGame();
+        }, 50);
+
+    }, 50);
 
     // 6. Reset History
     mutationHistory = [];
@@ -123,21 +167,9 @@ function showMenu() {
  */
 function initGame() {
     container.clearNodes();
-    let options = {
-        'sequence': currentSequence,
-        'structure': targetStructure,
-        'labelInterval': 5
-    };
 
-    // Calculate initial metrics immediately so the numbers aren't empty
-    // (We do a dummy fetch or just set 0 if we assume start isn't solved)
-
-    // For now, let's just render the RNA:
-    container.addRNA(options.structure, options);
-
-    // Reset metrics display
-    document.getElementById('dist-val').innerText = "--";
-    document.getElementById('mfe-val').innerText = "--";
+    // Display nothing or a loader initially? 
+    // container is already cleared.
 
     // Trigger an initial "mutate" call with the starting sequence 
     // to get the real initial MFE and Distance from the backend.
@@ -148,7 +180,17 @@ function initGame() {
     })
         .then(r => r.json())
         .then(data => {
+            // Render the RNA with the calculated structure logic
+            let options = {
+                'sequence': currentSequence,
+                'structure': data.structure, // Use calculated MFE structure
+                'labelInterval': 5
+            };
+
+            container.addRNA(data.structure, options);
+
             updateMetrics(data);
+            updateTargetHighlighting(data.structure);
 
             // Re-center after initial load
             setTimeout(() => container.center_view(), 100);
@@ -403,13 +445,6 @@ function undoLastMutation() {
 
     // Apply mutation back to old base, but DO NOT record it in history again
     mutateNode(lastStep.oldBase, false);
-
-    // We already popped, but mutateNode calls updateUndoUI? 
-    // Wait, mutateNode calls updateUndoUI only if recordHistory is true? No.
-    // We need to ensure UI is updated. 
-    // Actually, I put updateUndoUI inside the `if (recordHistory)` block in mutateNode.
-    // So if recordHistory is false, it won't be called essentially?
-    // Let's add explicit updateUndoUI here just in case.
     updateUndoUI();
 }
 
