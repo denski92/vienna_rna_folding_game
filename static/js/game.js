@@ -45,7 +45,7 @@ const LEVELS = [
     {
         name: "The Cross",
         target: "((((..(((...)))..(((...)))..))))",
-        startSeq: "GGGGAAGCGAAACGCAAGCGAAACGCAACCCC"
+        startSeq: "UGCGAAGCCAGAGGCCAGGGACCCCCAACGCG"
     },
     {
         name: "Long Distance",

@@ -1,3 +1,4 @@
 setup_assets.py
 __pycache__/
 *.pyc
+.gitignore
