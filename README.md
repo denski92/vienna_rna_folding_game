@@ -1,6 +1,6 @@
 # RNA Folding Game
 
-A web-based interactive game where players mutate RNA sequences (A, U, C, G) to achieve a target secondary structure. The application uses the **ViennaRNA** package for real-time thermodynamic folding and Minimum Free Energy (MFE) calculations.
+A "web-based" interactive game where players mutate RNA sequences (A, U, C, G) to achieve a target secondary structure. The application uses the **ViennaRNA** package for real-time thermodynamic folding and Minimum Free Energy (MFE) calculations.
 
 ## Features
 
