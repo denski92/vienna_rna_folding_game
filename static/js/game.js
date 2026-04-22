@@ -24,23 +24,23 @@ let targetContainer = new FornaContainer("#target-rna-container", {
 const LEVELS = [
     {
         name: "The Hairpin",
-        target: "((((((.......))))))",
-        startSeq: "GAUGGGAAUUAAACCCAUC"
+        target: "(((((.....)))))",
+        startSeq: "AUGGGUUAAACCCAU"
     },
     {
         name: "Internal Loop",
-        target: "((((((....((....))....))))))",
-        startSeq: "GGGGGGAAAAGGAAAACCAAAACCCCCC"
+        target: "(((...((...))...)))",
+        startSeq: "GGGAAAGGAAACCAAACCC"
     },
     {
         name: "The Bulge",
-        target: "((((((.((....)).))))))",
-        startSeq: "GGGGGGUAAUUUUUAGCCCCCC"
+        target: "(((.((....)))))",
+        startSeq: "GGGUAAUUUUUGCCC"
     },
     {
         name: "Twin Towers",
-        target: "((((....)))).((((....))))",
-        startSeq: "GGGGAAAACCCCAGGGGAAAACCCC"
+        target: "((((...)))).((((...))))",
+        startSeq: "GGGGAAACCCCACCCCAAAGGGG"
     },
     {
         name: "The Cross",
@@ -48,9 +48,9 @@ const LEVELS = [
         startSeq: "UGCGAAGCCAGAGGCCAGGGACCCCCAACGCG"
     },
     {
-        name: "Long Distance",
-        target: "((((((((((....))))))))))",
-        startSeq: "GGGGGGGGGGAAAACCCCCCCCCC"
+        name: "tRNA",
+        target: "(((((((..((((.........))))...((((((...))))))....(((((.......)))))))))))).",
+        startSeq: "GCCCCUAUCGUCUAGUGGUUCAGGACAUCUCUCUUUCAAGGAGGCAGCGGGGAUUCGACUUCCCCUGGGGGUA"
     }
 ];
 
@@ -124,7 +124,6 @@ function startLevel(lvlIndex) {
 
     currentLevelIndex = lvlIndex; // Store current level index
 
-    // 1. Set State
     // 1. Set State
     // Apply difficulty logic
     let mutationCount = 3;
