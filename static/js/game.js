@@ -309,6 +309,7 @@ function mutateNode(newBase, recordHistory = true) {
     // Reset help view if active
     if (isHelpViewActive) {
         clearHelpHighlighting();
+        container.startAnimation(); // Re-enable dragging
         isHelpViewActive = false;
         savedMFEPositions = null;
         document.getElementById('help-btn').classList.remove('active');
@@ -602,8 +603,8 @@ function toggleHelpView() {
         let targetNuc = targetLayout.get_positions('nucleotide');
         let targetLabel = targetLayout.get_positions('label');
         let targetMiddle = targetLayout.nodes
-            .filter(function(n) { return n.node_type === 'middle'; })
-            .map(function(n) { return [n.x, n.y]; });
+            .filter(function (n) { return n.node_type === 'middle'; })
+            .map(function (n) { return [n.x, n.y]; });
 
         // Get current positions for alignment
         const currentNuc = rna.get_positions('nucleotide');
@@ -615,19 +616,20 @@ function toggleHelpView() {
         targetLabel = targetLabel.map(transform);
         targetMiddle = targetMiddle.map(transform);
 
-        // Stop force layout during transition
+        // Stop force layout and disable dragging during help view
         container.force.stop();
+        d3.select('#rna_container').selectAll('g.gnode').on('mousedown.drag', null);
 
         // Animate nodes to target positions without changing graph structure
         const linkSel = d3.select('#rna_container').select('svg').selectAll('line.link');
-        const labelNodes = rna.nodes.filter(function(n) { return n.node_type === 'label'; });
-        const middleNodes = rna.nodes.filter(function(n) { return n.node_type === 'middle'; });
+        const labelNodes = rna.nodes.filter(function (n) { return n.node_type === 'label'; });
+        const middleNodes = rna.nodes.filter(function (n) { return n.node_type === 'middle'; });
         const gnodes = d3.select('#rna_container').selectAll('g.gnode');
 
         let total = 0, done = 0;
-        gnodes.each(function() { total++; });
+        gnodes.each(function () { total++; });
 
-        gnodes.transition().duration(duration).tween('helpMorph', function(node) {
+        gnodes.transition().duration(duration).tween('helpMorph', function (node) {
             var target;
             if (node.node_type === 'nucleotide') {
                 target = targetNuc[node.num - 1];
@@ -638,22 +640,22 @@ function toggleHelpView() {
                 var idx = middleNodes.indexOf(node);
                 target = idx >= 0 && idx < targetMiddle.length ? targetMiddle[idx] : null;
             }
-            if (!target) return function() {};
+            if (!target) return function () { };
 
             var ix = d3.interpolateNumber(node.x, target[0]);
             var iy = d3.interpolateNumber(node.y, target[1]);
 
-            return function(t) {
+            return function (t) {
                 node.x = ix(t);
                 node.y = iy(t);
                 node.px = node.x;
                 node.py = node.y;
                 d3.select(this).attr('transform', 'translate(' + node.x + ',' + node.y + ')');
                 linkSel
-                    .attr('x1', function(l) { return l.source.x; })
-                    .attr('y1', function(l) { return l.source.y; })
-                    .attr('x2', function(l) { return l.target.x; })
-                    .attr('y2', function(l) { return l.target.y; });
+                    .attr('x1', function (l) { return l.source.x; })
+                    .attr('y1', function (l) { return l.source.y; })
+                    .attr('x2', function (l) { return l.target.x; })
+                    .attr('y2', function (l) { return l.target.y; });
             };
         });
 
@@ -682,8 +684,8 @@ function toggleHelpView() {
         let mfeNuc = mfeLayout.get_positions('nucleotide');
         let mfeLabel = mfeLayout.get_positions('label');
         let mfeMiddle = mfeLayout.nodes
-            .filter(function(n) { return n.node_type === 'middle'; })
-            .map(function(n) { return [n.x, n.y]; });
+            .filter(function (n) { return n.node_type === 'middle'; })
+            .map(function (n) { return [n.x, n.y]; });
 
         // Align MFE layout to current view orientation
         const transform = bestFitTransform(currentNuc, mfeNuc);
@@ -692,14 +694,14 @@ function toggleHelpView() {
         mfeMiddle = mfeMiddle.map(transform);
 
         const linkSel = d3.select('#rna_container').select('svg').selectAll('line.link');
-        const labelNodes = rna.nodes.filter(function(n) { return n.node_type === 'label'; });
-        const middleNodes = rna.nodes.filter(function(n) { return n.node_type === 'middle'; });
+        const labelNodes = rna.nodes.filter(function (n) { return n.node_type === 'label'; });
+        const middleNodes = rna.nodes.filter(function (n) { return n.node_type === 'middle'; });
         const gnodes = d3.select('#rna_container').selectAll('g.gnode');
 
         let total = 0, done = 0;
-        gnodes.each(function() { total++; });
+        gnodes.each(function () { total++; });
 
-        gnodes.transition().duration(duration).tween('helpMorphBack', function(node) {
+        gnodes.transition().duration(duration).tween('helpMorphBack', function (node) {
             var target;
             if (node.node_type === 'nucleotide') {
                 target = mfeNuc[node.num - 1];
@@ -709,26 +711,28 @@ function toggleHelpView() {
                 var idx = middleNodes.indexOf(node);
                 target = idx >= 0 && idx < mfeMiddle.length ? mfeMiddle[idx] : null;
             }
-            if (!target) return function() {};
+            if (!target) return function () { };
 
             var ix = d3.interpolateNumber(node.x, target[0]);
             var iy = d3.interpolateNumber(node.y, target[1]);
 
-            return function(t) {
+            return function (t) {
                 node.x = ix(t);
                 node.y = iy(t);
                 node.px = node.x;
                 node.py = node.y;
                 d3.select(this).attr('transform', 'translate(' + node.x + ',' + node.y + ')');
                 linkSel
-                    .attr('x1', function(l) { return l.source.x; })
-                    .attr('y1', function(l) { return l.source.y; })
-                    .attr('x2', function(l) { return l.target.x; })
-                    .attr('y2', function(l) { return l.target.y; });
+                    .attr('x1', function (l) { return l.source.x; })
+                    .attr('y1', function (l) { return l.source.y; })
+                    .attr('x2', function (l) { return l.target.x; })
+                    .attr('y2', function (l) { return l.target.y; });
             };
-        }).each('end', function() {
-            if (++done === total && container.animation) {
-                container.force.alpha(0.15).resume();
+        }).each('end', function () {
+            if (++done === total) {
+                // Re-enable dragging and gently resume force
+                container.startAnimation();
+                container.force.alpha(0.04);
             }
         });
 
@@ -779,10 +783,10 @@ function applyHelpHighlighting(currentStructureString) {
 
     // Apply classes to main container nucleotide nodes
     d3.select('#rna_container').selectAll('.node')
-        .classed('help-correct', function(d) {
+        .classed('help-correct', function (d) {
             return d.node_type === 'nucleotide' && correctIndices.has(d.num - 1);
         })
-        .classed('help-wrong', function(d) {
+        .classed('help-wrong', function (d) {
             return d.node_type === 'nucleotide' && !correctIndices.has(d.num - 1);
         });
 }

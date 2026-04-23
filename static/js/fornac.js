@@ -85,7 +85,7 @@ function FornaContainer(h, f) {
                         .attr("y2", function (l) { return l.target.y; });
                 };
             }).each("end", function () {
-                if (++done === total && d.animation) { d.force.alpha(0.15).resume(); }
+                if (++done === total && d.animation) { d.force.alpha(0.3).resume(); }
             });
         }; d.recalculateGraph = function (b) {
             d.graph.nodes =
@@ -121,7 +121,7 @@ function FornaContainer(h, f) {
                         0 !== d.graph.nodes.length && (min_x = d3.min(d.graph.nodes.map(function (b) { return b.x })), min_y = d3.min(d.graph.nodes.map(function (b) { return b.y })), max_x = d3.max(d.graph.nodes.map(function (b) { return b.x })), max_y = d3.max(d.graph.nodes.map(function (b) { return b.y })),
                             mol_width = max_x - min_x, mol_height = max_y - min_y, width_ratio = d.options.svgW / (mol_width + 1), height_ratio = d.options.svgH / (mol_height + 1), min_ratio = .8 * Math.min(width_ratio, height_ratio), new_mol_width = mol_width * min_ratio, new_mol_height = mol_height * min_ratio, x_trans = -min_x * min_ratio + (d.options.svgW - new_mol_width) / 2, y_trans = -min_y * min_ratio + (d.options.svgH - new_mol_height) / 2, v.attr("transform", "translate(" + [x_trans, y_trans] + ") scale(" + min_ratio + ")"), zoomer.translate([x_trans, y_trans]), zoomer.scale(min_ratio))
                     };
-    d.force = d3.layout.force().charge(function (b) { return -30 }).chargeDistance(300).friction(.35).linkDistance(function (b) { return 15 * b.value }).linkStrength(function (b) { return b.link_type in d.linkStrengths ? d.linkStrengths[b.link_type] : d.linkStrengths.other }).gravity(0).nodes(d.graph.nodes).links(d.graph.links).chargeDistance(110).size([d.options.svgW, d.options.svgH]); var H = v.append("line").attr("class", "drag_line").attr("x1", 0).attr("y1", 0).attr("x2", 0).attr("y2", 0), C = !1, B = !1; d.resumeForce = function () {
+    d.force = d3.layout.force().charge(function (b) { return -30 }).chargeDistance(300).friction(.45).linkDistance(function (b) { return 15 * b.value }).linkStrength(function (b) { return b.link_type in d.linkStrengths ? d.linkStrengths[b.link_type] : d.linkStrengths.other }).gravity(0).nodes(d.graph.nodes).links(d.graph.links).chargeDistance(110).size([d.options.svgW, d.options.svgH]); var H = v.append("line").attr("class", "drag_line").attr("x1", 0).attr("y1", 0).attr("x2", 0).attr("y2", 0), C = !1, B = !1; d.resumeForce = function () {
         d.animation &&
             d.force.resume()
     }; var G = d3.behavior.drag().on("dragstart", function (b) { d3.event.sourceEvent.stopPropagation(); b.selected || B || p.selectAll("g.gnode").selectAll(".outline_node").classed("selected", function (b) { return b.selected = d.options.applyForce && (b.previouslySelected = !1) }); d3.select(this).select(".outline_node").classed("selected", function (e) { b.previouslySelected = b.selected; return b.selected = d.options.applyForce && !0 }); e(b).each(function (b) { b.fixed |= 2 }) }).on("drag", function (b) {
