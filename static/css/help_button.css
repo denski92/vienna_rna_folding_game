@@ -1,0 +1,65 @@
+/* Help Button (Lightbulb) */
+.help-btn {
+    position: absolute;
+    top: 80px;  /* Below the undo button */
+    left: 20px;
+    width: 50px;
+    height: 50px;
+    padding: 0;
+
+    background: var(--bg-card);
+    backdrop-filter: blur(4px);
+    border: 1px solid var(--border-subtle);
+    border-radius: 50%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    cursor: pointer;
+    z-index: 100;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.help-btn:hover {
+    background: var(--bg-sidebar);
+    border-color: var(--accent-yellow);
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(250, 204, 21, 0.4);
+}
+
+/* Active (help mode engaged) */
+.help-btn.active {
+    background: rgba(250, 204, 21, 0.15);
+    border-color: var(--accent-yellow);
+    box-shadow: 0 0 20px rgba(250, 204, 21, 0.5);
+}
+
+.help-btn .help-icon {
+    font-size: 1.5rem;
+    transition: all 0.3s;
+    line-height: 1;
+}
+
+.help-btn:hover .help-icon {
+    filter: drop-shadow(0 0 6px rgba(250, 204, 21, 0.8));
+}
+
+.help-btn.active .help-icon {
+    filter: drop-shadow(0 0 8px rgba(250, 204, 21, 1));
+}
+
+/* --- Help View: Nucleotide Correctness Highlighting --- */
+
+/* Correct nucleotides: constant green glow */
+#rna_container .node[node_type="nucleotide"].help-correct {
+    fill: #2ecc71 !important;
+    filter: drop-shadow(0 0 6px rgba(46, 204, 113, 0.7));
+}
+
+/* Wrong nucleotides: constant red glow */
+#rna_container .node[node_type="nucleotide"].help-wrong {
+    fill: #e74c3c !important;
+    filter: drop-shadow(0 0 6px rgba(231, 76, 60, 0.7));
+}
