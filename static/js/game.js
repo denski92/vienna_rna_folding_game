@@ -166,6 +166,9 @@ function startLevel(lvlIndex) {
     // 6. Reset History
     mutationHistory = [];
     isLevelSolvedAndContinued = false; // Reset flag on new level
+    isHelpViewActive = false;
+    savedMFEPositions = null;
+    document.getElementById('help-btn').classList.remove('active');
     updateUndoUI();
 }
 
@@ -302,6 +305,14 @@ function mutateNode(newBase, recordHistory = true) {
 
     document.getElementById('mutation-menu').style.display = 'none';
     if (selectedNodeIndex === -1) return;
+
+    // Reset help view if active
+    if (isHelpViewActive) {
+        clearHelpHighlighting();
+        isHelpViewActive = false;
+        savedMFEPositions = null;
+        document.getElementById('help-btn').classList.remove('active');
+    }
 
     // 1. Capture Camera
     let prevTranslate = [0, 0], prevScale = 1;
@@ -553,4 +564,234 @@ function renderLevelMenu() {
             card.classList.add('fully-solved');
         }
     });
+}
+
+// --- Help View (Lightbulb) ---
+let isHelpViewActive = false;
+let savedMFEPositions = null; // Stores nucleotide positions from the MFE layout
+let lastKnownMFEStructure = ""; // Store the last MFE structure string
+
+/**
+ * Toggle the help view: morph nucleotide positions to target structure layout
+ * while keeping the current MFE basepairs intact. This lets the user see which
+ * basepairs are wrong in the context of the target geometry.
+ */
+function toggleHelpView() {
+    if (!targetStructure || !container.graph.nodes.length) return;
+
+    const rnaKeys = Object.keys(container.rnas);
+    if (!rnaKeys.length) return;
+    const rna = container.rnas[rnaKeys[0]];
+
+    const btn = document.getElementById('help-btn');
+    const duration = 900;
+
+    if (!isHelpViewActive) {
+        // --- Activate Help View: Move to target positions ---
+
+        // Save current nucleotide positions so we can restore later
+        savedMFEPositions = rna.get_positions('nucleotide');
+
+        // Compute target layout positions from the target structure
+        const targetLayout = container.createInitialLayout(targetStructure, {
+            sequence: ' '.repeat(targetStructure.length),
+            labelInterval: container.options.labelInterval
+        });
+
+        // Get target nucleotide positions
+        let targetNuc = targetLayout.get_positions('nucleotide');
+        let targetLabel = targetLayout.get_positions('label');
+        let targetMiddle = targetLayout.nodes
+            .filter(function(n) { return n.node_type === 'middle'; })
+            .map(function(n) { return [n.x, n.y]; });
+
+        // Get current positions for alignment
+        const currentNuc = rna.get_positions('nucleotide');
+        const currentLabel = rna.get_positions('label');
+
+        // Align target to current orientation using bestFitTransform
+        const transform = bestFitTransform(currentNuc, targetNuc);
+        targetNuc = targetNuc.map(transform);
+        targetLabel = targetLabel.map(transform);
+        targetMiddle = targetMiddle.map(transform);
+
+        // Stop force layout during transition
+        container.force.stop();
+
+        // Animate nodes to target positions without changing graph structure
+        const linkSel = d3.select('#rna_container').select('svg').selectAll('line.link');
+        const labelNodes = rna.nodes.filter(function(n) { return n.node_type === 'label'; });
+        const middleNodes = rna.nodes.filter(function(n) { return n.node_type === 'middle'; });
+        const gnodes = d3.select('#rna_container').selectAll('g.gnode');
+
+        let total = 0, done = 0;
+        gnodes.each(function() { total++; });
+
+        gnodes.transition().duration(duration).tween('helpMorph', function(node) {
+            var target;
+            if (node.node_type === 'nucleotide') {
+                target = targetNuc[node.num - 1];
+            } else if (node.node_type === 'label') {
+                target = targetLabel[labelNodes.indexOf(node)];
+            } else if (node.node_type === 'middle') {
+                // Find the closest matching middle node position
+                var idx = middleNodes.indexOf(node);
+                target = idx >= 0 && idx < targetMiddle.length ? targetMiddle[idx] : null;
+            }
+            if (!target) return function() {};
+
+            var ix = d3.interpolateNumber(node.x, target[0]);
+            var iy = d3.interpolateNumber(node.y, target[1]);
+
+            return function(t) {
+                node.x = ix(t);
+                node.y = iy(t);
+                node.px = node.x;
+                node.py = node.y;
+                d3.select(this).attr('transform', 'translate(' + node.x + ',' + node.y + ')');
+                linkSel
+                    .attr('x1', function(l) { return l.source.x; })
+                    .attr('y1', function(l) { return l.source.y; })
+                    .attr('x2', function(l) { return l.target.x; })
+                    .attr('y2', function(l) { return l.target.y; });
+            };
+        });
+
+        // Apply correctness pulsing to nucleotides
+        applyHelpHighlighting(rna.dotbracket);
+
+        btn.classList.add('active');
+        isHelpViewActive = true;
+
+    } else {
+        // --- Deactivate Help View: Move back to MFE positions ---
+
+        if (!savedMFEPositions) return;
+
+        container.force.stop();
+
+        // Align saved positions to current orientation
+        const currentNuc = rna.get_positions('nucleotide');
+
+        // Recompute MFE layout positions fresh to ensure they're correct
+        const mfeLayout = container.createInitialLayout(rna.dotbracket, {
+            sequence: rna.seq,
+            labelInterval: container.options.labelInterval
+        });
+
+        let mfeNuc = mfeLayout.get_positions('nucleotide');
+        let mfeLabel = mfeLayout.get_positions('label');
+        let mfeMiddle = mfeLayout.nodes
+            .filter(function(n) { return n.node_type === 'middle'; })
+            .map(function(n) { return [n.x, n.y]; });
+
+        // Align MFE layout to current view orientation
+        const transform = bestFitTransform(currentNuc, mfeNuc);
+        mfeNuc = mfeNuc.map(transform);
+        mfeLabel = mfeLabel.map(transform);
+        mfeMiddle = mfeMiddle.map(transform);
+
+        const linkSel = d3.select('#rna_container').select('svg').selectAll('line.link');
+        const labelNodes = rna.nodes.filter(function(n) { return n.node_type === 'label'; });
+        const middleNodes = rna.nodes.filter(function(n) { return n.node_type === 'middle'; });
+        const gnodes = d3.select('#rna_container').selectAll('g.gnode');
+
+        let total = 0, done = 0;
+        gnodes.each(function() { total++; });
+
+        gnodes.transition().duration(duration).tween('helpMorphBack', function(node) {
+            var target;
+            if (node.node_type === 'nucleotide') {
+                target = mfeNuc[node.num - 1];
+            } else if (node.node_type === 'label') {
+                target = mfeLabel[labelNodes.indexOf(node)];
+            } else if (node.node_type === 'middle') {
+                var idx = middleNodes.indexOf(node);
+                target = idx >= 0 && idx < mfeMiddle.length ? mfeMiddle[idx] : null;
+            }
+            if (!target) return function() {};
+
+            var ix = d3.interpolateNumber(node.x, target[0]);
+            var iy = d3.interpolateNumber(node.y, target[1]);
+
+            return function(t) {
+                node.x = ix(t);
+                node.y = iy(t);
+                node.px = node.x;
+                node.py = node.y;
+                d3.select(this).attr('transform', 'translate(' + node.x + ',' + node.y + ')');
+                linkSel
+                    .attr('x1', function(l) { return l.source.x; })
+                    .attr('y1', function(l) { return l.source.y; })
+                    .attr('x2', function(l) { return l.target.x; })
+                    .attr('y2', function(l) { return l.target.y; });
+            };
+        }).each('end', function() {
+            if (++done === total && container.animation) {
+                container.force.alpha(0.15).resume();
+            }
+        });
+
+        // Remove correctness pulsing
+        clearHelpHighlighting();
+
+        btn.classList.remove('active');
+        isHelpViewActive = false;
+        savedMFEPositions = null;
+    }
+}
+
+/**
+ * Apply pulsing correct/wrong classes to nucleotides in the main container
+ * based on whether their base-pairing matches the target structure.
+ */
+function applyHelpHighlighting(currentStructureString) {
+    if (!targetStructure || !currentStructureString) return;
+
+    // Reuse the same pair-map logic from updateTargetHighlighting
+    function getPairMap(structure) {
+        let stack = [];
+        let map = new Array(structure.length).fill(-1);
+        for (let i = 0; i < structure.length; i++) {
+            if (structure[i] === '(') {
+                stack.push(i);
+            } else if (structure[i] === ')') {
+                let open = stack.pop();
+                if (open !== undefined) {
+                    map[open] = i;
+                    map[i] = open;
+                }
+            }
+        }
+        return map;
+    }
+
+    const targetPairs = getPairMap(targetStructure);
+    const currentPairs = getPairMap(currentStructureString);
+
+    // Identify correct indices
+    let correctIndices = new Set();
+    for (let i = 0; i < targetPairs.length; i++) {
+        if (targetPairs[i] === currentPairs[i]) {
+            correctIndices.add(i);
+        }
+    }
+
+    // Apply classes to main container nucleotide nodes
+    d3.select('#rna_container').selectAll('.node')
+        .classed('help-correct', function(d) {
+            return d.node_type === 'nucleotide' && correctIndices.has(d.num - 1);
+        })
+        .classed('help-wrong', function(d) {
+            return d.node_type === 'nucleotide' && !correctIndices.has(d.num - 1);
+        });
+}
+
+/**
+ * Remove all help highlighting classes from the main container.
+ */
+function clearHelpHighlighting() {
+    d3.select('#rna_container').selectAll('.node')
+        .classed('help-correct', false)
+        .classed('help-wrong', false);
 }
